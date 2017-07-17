@@ -1,6 +1,6 @@
 # Evento Course Creation
 Plugin for Creation of empty moodle courses in a definied category based on the events in the
-Evenot application. 
+Evento application. 
 Creating courses with
    * cours name like the Evento Module name
    * course shortname like the Evento "Anlassnummer" without "mod."
