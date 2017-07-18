@@ -9,7 +9,7 @@ Creating courses with
    * course idnumber kile the Evento "Anlassnummer"
    * Added course Evento enrolment method
 
-Only include Evento modules to create moodle courses, which are editded at least one year ago,
+Only include Evento modules to create moodle courses, which are editded at most one year ago,
  have at least one active enrolment and which have the start date in the future.
 
 # Config
