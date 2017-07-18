@@ -34,6 +34,16 @@ define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER', '|');
 define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX', 'mod.');
 
 /**
+ * Prefix for spring term inside evento eventnumbers
+ */
+define('LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX', 'FS');
+
+/**
+ * Prefix for autumn term inside evento eventnumbers
+ */
+define('LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX', 'HS');
+
+/**
  * Class definition for the evento course creation
  *
  * @package    local_eventocoursecreation
@@ -109,13 +119,18 @@ class local_eventocoursecreation_course_creation {
 
                 foreach ($modnumbers as $modn) {
                     try {
-                        // hole alle Evento module mit gleicher eventonumer bsp: "mod.bsp%" und welche aktiv, oder Startdatum in der Zukunft liegt.
+                        // Get all Evento moduls with the same eventonumber p.I.: "mod.bsp%" and aktive with a future start date
                         $events = $this::get_future_events($modn);
                         $subcat = null;
                         $period = "";
 
                         foreach ($events as $event) {
                             try {
+                                // Skip if course already exists
+                                if (self::course_exists_by_idnumber($event->anlassNummer)) {
+                                    continue;
+                                }
+
                                 $starttime = strtotime($event->anlassDatumVon) ? strtotime($event->anlassDatumVon) : null;
                                 $newperiod = self::get_module_period($event->anlassNummer, $starttime);
                                 $subcat = ($period != $newperiod) ? null : $subcat;
@@ -136,7 +151,7 @@ class local_eventocoursecreation_course_creation {
                                 }
                                 // Create an empty course
                                 $newcourse = $this->create_new_course($event, $subcat->id);
-                                // Add Evento enroment instance
+                                // Add Evento enrolment instance
                                 if (isset($newcourse) && isset($this->enrolplugin) && enrol_is_enabled('evento')) {
                                     $this->enrolplugin->add_instance($newcourse);
                                 }
@@ -216,10 +231,17 @@ class local_eventocoursecreation_course_creation {
      * @return array of stdClass objects of categories
      */
     public static function get_categories($catidnprefix) {
-
         $whereclause = "UPPER(cc.idnumber) like UPPER(:catidnprefix)";
         $params = array('catidnprefix' => $catidnprefix . "%");
         $result = self::get_category_records($whereclause, $params);
+
+        // Exclude Categories with period like .HS17 or .FS17
+        $result = array_filter($result,
+                            function ($var) {
+                                return (!stripos($var->idnumber, '.' . LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
+                                        && !stripos($var->idnumber, '.' . LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX));
+                            }
+        );
 
         return $result;
     }
@@ -300,25 +322,24 @@ class local_eventocoursecreation_course_creation {
             $modnumbers = explode('.', $eventnumber);
             $modnumbers = array_filter($modnumbers,
                                 function ($var) {
-                                    return (strtoupper(substr($var, 0, 2 )) == "HS" || strtoupper(substr($var, 0, 2 )) == "FS");
+                                    return (strtoupper(substr($var, 0, 2 )) == LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX
+                                            || strtoupper(substr($var, 0, 2 )) == LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX);
                                 }
             );
-            if (array_key_exists(0, $modnumbers)) {
-                $result = $modnumbers[0];
-            }
+            $result = reset($modnumbers);
         }
 
         // Is the term set or valid ?
-        if (!isset($result) || (!stristr($result, "HS") && !stristr($result, "FS"))) {
+        if (!isset($result) || (!stristr($result, LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX) && !stristr($result, LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX))) {
             // Get the default term string like HS17 or FS17
             if (isset($eventstarttime)) {
                 $month = date('n', $eventstarttime);
                 $year = date('y', $eventstarttime);
                 $fsmonths = array('2', '3', '4', '5', '6', '7');
                 if (in_array($month, $fsmonths)) {
-                    $term = "FS";
+                    $term = LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX;
                 } else {
-                    $term = "HS";
+                    $term = LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX;
                 }
                 $result = $term . $year;
             }
@@ -452,6 +473,16 @@ class local_eventocoursecreation_course_creation {
                 array('contextcoursecat' => CONTEXT_COURSECAT) + $params);
     }
 
+    /**
+     * Check if the course by an idnumber exists
+     *
+     * @param string $idnumber
+     * @return bool
+     */
+    protected static function course_exists_by_idnumber($idnumber) {
+        global $DB;
+        return ($DB->record_exists('course', array('idnumber' => $idnumber)));
+    }
 
     /**
      * Create the category name of a period
