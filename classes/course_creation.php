@@ -111,11 +111,14 @@ class local_eventocoursecreation_course_creation {
                         // hole alle Evento module mit gleicher eventonumer bsp: "mod.bsp%" und welche aktiv, oder Startdatum in der Zukunft liegt.
                         $events = $this::get_future_events($modn);
                         $subcat = null;
+                        $period = "";
 
                         foreach ($events as $event) {
                             try {
                                 $starttime = strtotime($event->anlassDatumVon) ? strtotime($event->anlassDatumVon) : null;
-                                $period = self::get_module_period($event->anlassNummer, $starttime);
+                                $newperiod = self::get_module_period($event->anlassNummer, $starttime);
+                                $subcat = ($period != $newperiod) ? null : $subcat;
+                                $period = $newperiod;
 
                                 // Get or create the period subcategory
                                 if (empty($subcat)) {
@@ -286,16 +289,21 @@ class local_eventocoursecreation_course_creation {
         $result = null;
 
         if (isset($eventnumber)) {
-            // Get the third part of the eventnumber
+            // Filter to get the substring with HS or FS prefix
             $modnumbers = explode('.', $eventnumber);
-            if (array_key_exists(2, $modnumbers)) {
-                $result = $modnumbers[2];
+            $modnumbers = array_filter($modnumbers,
+                                function ($var) {
+                                    return (strtoupper(substr($var, 0, 2 )) == "HS" || strtoupper(substr($var, 0, 2 )) == "FS");
+                                }
+            );
+            if (array_key_exists(0, $modnumbers)) {
+                $result = $modnumbers[0];
             }
         }
 
         // Is the term set or valid ?
         if (!isset($result) || (!stristr($result, "HS") && !stristr($result, "FS"))) {
-            // Get the default term string
+            // Get the default term string like HS17 or FS17
             if (isset($eventstarttime)) {
                 $month = date('n', $eventstarttime);
                 $year = date('y', $eventstarttime);
