@@ -79,6 +79,7 @@ class local_eventocoursecreation_course_creation {
             // Init.
             $this->trace = $trace;
             // Todo check if enabled
+            $syncstart = microtime(true);
 
             if ($this->config->enableplugin == 0) {
                 $pluginname = new lang_string('pluginname', 'local_eventocoursecreation');
@@ -197,6 +198,12 @@ class local_eventocoursecreation_course_creation {
             $this->trace->finished();
             return 1;
         }
+        $syncend = microtime(true);
+        $synctime = $syncend - $syncstart;
+        $debugmessage = "Evento course syncronisation process time: {$synctime}";
+        debugging($debugmessage, DEBUG_DEVELOPER);
+        $trace->output($debugmessage);
+
         $this->trace->output('Evento course synchronisation finished...');
         $this->trace->finished();
         return 0;
