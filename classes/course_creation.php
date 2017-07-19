@@ -88,7 +88,6 @@ class local_eventocoursecreation_course_creation {
 
             // Init.
             $this->trace = $trace;
-            // Todo check if enabled
             $syncstart = microtime(true);
 
             if ($this->config->enableplugin == 0) {
@@ -153,7 +152,7 @@ class local_eventocoursecreation_course_creation {
                                 $newcourse = $this->create_new_course($event, $subcat->id);
                                 // Add Evento enrolment instance
                                 if (isset($newcourse) && isset($this->enrolplugin) && enrol_is_enabled('evento')) {
-                                    $this->enrolplugin->add_instance($newcourse);
+                                    $this->enrolplugin->add_default_instance($newcourse);
                                 }
                             } catch (SoapFault $fault) {
                                 debugging("Soapfault : ". $fault->__toString());
