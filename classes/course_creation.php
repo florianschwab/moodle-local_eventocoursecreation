@@ -560,7 +560,8 @@ class local_eventocoursecreation_course_creation {
                 $result = $DB->get_record('course', $params);
             }
         }
-        if (isset($result)) {
+        // Set lookup table
+        if (!empty($result)) {
             $this->moodlecourses[$result->idnumber] = $result;
         }
         return $result;
