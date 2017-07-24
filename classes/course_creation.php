@@ -183,20 +183,20 @@ class local_eventocoursecreation_course_creation {
                             } catch (SoapFault $fault) {
                                 debugging("Soapfault : ". $fault->__toString());
                                 $this->trace->output("...evento course synchronisation aborted unexpected with a soapfault during "
-                                                    . "sync of catid: {$cat->id}; eventnr.:{$modn};");
+                                                    . "sync of catid: {$cat->id}; eventnr.:{$event->anlassNummer};");
                                 if (in_array($fault->faultcode, $this->stopsoapfaultcodes)) {
                                     // Stop execution.
                                     $this->trace->finished();
                                     return 1;
                                 }
                             } catch (Exception $ex) {
-                                debugging("Category sync with id {$cat->id}; eventnr.:{$modn} aborted with error: ". $ex->getMessage());
+                                debugging("Category sync with id {$cat->id}; eventnr.:{$event->anlassNummer} aborted with error: ". $ex->getMessage());
                                 $this->trace->output("...evento course synchronisation aborted unexpected during "
-                                                    . "sync of catid: {$cat->id}; eventnr.:{$modn};");
+                                                    . "sync of catid: {$cat->id}; eventnr.:{$event->anlassNummer};");
                             } catch (Throwable $ex) {
-                                debugging("Category sync with id {$cat->id}; eventnr.:{$modn} aborted with error: ". $ex->getMessage());
+                                debugging("Category sync with id {$cat->id}; eventnr.:{$event->anlassNummer} aborted with error: ". $ex->getMessage());
                                 $this->trace->output("...evento course synchronisation aborted unexpected during "
-                                                    . "sync of catid: {$cat->id}; eventnr.:{$modn};");
+                                                    . "sync of catid: {$cat->id}; eventnr.:{$event->anlassNummer};");
                             }
                         }
                         unset($subcat);
