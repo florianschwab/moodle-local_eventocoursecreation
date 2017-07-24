@@ -469,7 +469,8 @@ class local_eventocoursecreation_course_creation {
             if (!empty($event->anlassNummer)) {
                 $newcourse->idnumber = trim($event->anlassNummer);
             } else {
-                break;
+                throw new moodle_exception('noeventnumberset', 'local_eventocoursecreation', null, null,
+                                            'no "anlassNummer" set to create an new course');
             }
             $newcourse->shortname = trim(str_replace(LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX, "", $event->anlassNummer));
             $newcourse->fullname = trim($event->anlassBezeichnung);
