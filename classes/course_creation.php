@@ -130,7 +130,7 @@ class local_eventocoursecreation_course_creation {
                 foreach ($modnumbers as $modn) {
                     try {
                         // Get all Evento moduls with the same eventonumber p.I.: "mod.bsp%" and aktive with a future start date
-                        $events = $this::get_future_events($modn);
+                        $events = $this->get_future_events($modn);
                         $subcat = null;
                         $period = "";
 
@@ -326,7 +326,7 @@ class local_eventocoursecreation_course_creation {
         $idnprefix = LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX;
         $result = array_filter($result,
                             function ($var) use ($idnprefix) {
-                                return (strncasecmp($var, $idnprefix, 4) == 0);
+                                return (strncasecmp($var, $idnprefix, strlen($idnprefix)) == 0);
                             }
         );
 
