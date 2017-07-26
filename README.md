@@ -6,11 +6,15 @@ Creating courses with
    * course shortname like the Evento "Anlassnummer" without "mod."
    * course startdate like the begin in Evento
    * coure enddate like the end date in Evento
-   * course idnumber kile the Evento "Anlassnummer"
+   * course idnumber like the Evento "Anlassnummer"
    * Added course Evento enrolment method
 
 Only include Evento modules to create moodle courses, which are editded at most one year ago,
  have at least one active enrolment and which have the start date in the future.
+ 
+ Additional Features:
+   * Option to create several course of studies in one category
+   * Option to create common courses for multiple Evento events
 
 # Config
 Requires the local_evento plugin for the webservices access to Evento.
