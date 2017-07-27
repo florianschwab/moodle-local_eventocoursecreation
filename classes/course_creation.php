@@ -31,7 +31,7 @@ define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER', '|');
 /**
  * Delimiter to separate different in the category idnumber
  */
-define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER', '+');
+define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER', '§');
 
 /**
  * Prefix for category idnumbers which contains module numbers
