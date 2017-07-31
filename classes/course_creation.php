@@ -69,6 +69,10 @@ class local_eventocoursecreation_course_creation {
     protected $enrolplugin;
     // Temporary Array of moodle courses which are created or gotten from the database during sync
     protected $moodlecourses = array();
+    // Temporary member variable for filter_valid_create_events
+    // This is for the course of studies modulenumber prefix.
+    protected $modnrprefix;
+
 
 
     /**
@@ -410,7 +414,9 @@ class local_eventocoursecreation_course_creation {
         $eventoanlassfilter->idanlasstyp = local_evento_idanlasstyp::MODULANLASS;
 
         $events = local_evento_evento_service::to_array($this->eventoservice->get_events_by_filter($eventoanlassfilter, $limitationfilter2));
+        $this->modnrprefix = $modn;
         $result = array_filter($events, array($this, 'filter_valid_create_events'));
+        $this->modnrprefix = null;
 
         return $result;
     }
@@ -425,6 +431,16 @@ class local_eventocoursecreation_course_creation {
     protected function filter_valid_create_events($var) {
         $return = false;
         $now = time();
+
+        // Check if this event is from the same course of studies?
+        if (isset($this->modnrprefix)) {
+            $shortmodnr = str_replace($this->modnrprefix, "", ($var->anlassNummer));
+            // is the next character in lower case? -> so it is another course of studies
+            if (ctype_lower(substr($shortmodnr, 0, 1))) {
+                return false;
+            }
+        }
+
         // Has start date?
         if (empty($var->anlassDatumVon)) {
             return false;
