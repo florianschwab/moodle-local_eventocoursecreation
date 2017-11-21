@@ -436,32 +436,33 @@ class local_eventocoursecreation_course_creation {
         if (isset($this->modnrprefix)) {
             $shortmodnr = str_replace($this->modnrprefix, "", ($var->anlassNummer));
             // is the next character in lower case? -> so it is another course of studies
-            if (ctype_lower(substr($shortmodnr, 0, 1))) {
-                return false;
+            if (!ctype_lower(substr($shortmodnr, 0, 1))) {
+                $return = true;
             }
         }
 
         // Has start date?
-        if (empty($var->anlassDatumVon)) {
-            return false;
+        if ($return && empty($var->anlassDatumVon)) {
+            $return = false;
         }
+
         // Future start date
         $fromdate = strtotime($var->anlassDatumVon);
-        if ($fromdate >= $now) {
-            $return = true;
+        if ($return && ($fromdate < $now)) {
+            $return = false;
         }
         if ($return) {
             // Not "Abgesagt"
-            // todo move value this to config
-            if ($var->idAnlassStatus != '10230') {
-                $return = true;
+            // todo move value to config
+            if ($var->idAnlassStatus == '10230') {
+                $return = false;
             }
         }
         if ($return) {
             // Has enrolments?
             $eventoenrolments = local_evento_evento_service::to_array($this->eventoservice->get_enrolments_by_eventid($var->idAnlass));
-            if (!empty($eventoenrolments)) {
-                $return = true;
+            if (empty($eventoenrolments)) {
+                $return = false;
             }
         }
         return $return;
