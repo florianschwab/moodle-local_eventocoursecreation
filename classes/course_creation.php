@@ -452,9 +452,9 @@ class local_eventocoursecreation_course_creation {
             $return = false;
         }
         if ($return) {
-            // Not "Abgesagt"
+            // Not "Abgesagt" 
             // todo move value to config
-            if ($var->idAnlassStatus == '10230') {
+            if ($var->idAnlassStatus == '10270') {
                 $return = false;
             }
         }
