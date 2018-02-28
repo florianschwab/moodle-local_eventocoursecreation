@@ -52,7 +52,7 @@ class evento_course_creation_sync_task extends \core\task\scheduled_task {
 
         // Instance of enrol_evento_plugin.
         $plugin = new \local_eventocoursecreation_course_creation();
-        $result = $plugin->course_sync(new \null_progress_trace());
+        $result = $plugin->course_sync(new \text_progress_trace());
 
         return $result;
 
