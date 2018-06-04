@@ -21,6 +21,7 @@
  * @copyright  2017 HTW Chur Roger Barras
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_eventocoursecreation;
 
 defined('MOODLE_INTERNAL') || die();
 /**
@@ -59,15 +60,15 @@ define('LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX', 'HS');
 class local_eventocoursecreation_course_creation {
     // Plugin configuration.
     private $config;
-    // trace reference to null_progress_trace
+    // Trace reference to null_progress_trace.
     protected $trace;
-    // evento WS reference to local_evento_evento_service
+    // Evento WS reference to local_evento_evento_service.
     protected $eventoservice;
-    // soapfaultcodes for stop execution
+    // Soapfaultcodes for stop execution.
     protected $stopsoapfaultcodes = array('HTTP', 'soapenv:Server', 'Server');
-    // Evento enrolplugin
+    // Evento enrolplugin.
     protected $enrolplugin;
-    // Temporary Array of moodle courses which are created or gotten from the database during sync
+    // Temporary Array of moodle courses which are created or gotten from the database during sync.
     protected $moodlecourses = array();
     // Temporary member variable for filter_valid_create_events
     // This is for the course of studies modulenumber prefix.
@@ -114,7 +115,7 @@ class local_eventocoursecreation_course_creation {
             raise_memory_limit(MEMORY_HUGE);
 
             if (!$this->eventoservice->init_call()) {
-                // webservice not available
+                // Webservice not available.
                 $this->trace->output("Evento webservice not available");
                 return 2;
             }
@@ -133,7 +134,7 @@ class local_eventocoursecreation_course_creation {
 
                 foreach ($modnumbers as $modn) {
                     try {
-                        // Get all Evento moduls with the same eventonumber p.I.: "mod.bsp%" and aktive with a future start date
+                        // Get all Evento moduls with the same eventonumber p.I.: "mod.bsp%" and aktive with a future start date.
                         $events = $this->get_future_events($modn);
                         $subcat = null;
                         $period = "";
@@ -143,42 +144,42 @@ class local_eventocoursecreation_course_creation {
                                 $starttime = strtotime($event->anlassDatumVon);
                                 $starttime = $starttime ? $starttime : null;
                                 $newperiod = self::get_module_period($event->anlassNummer, $starttime);
-                                // Reset subcat if not in the same period
+                                // Reset subcat if not in the same period.
                                 $subcat = ($period != $newperiod) ? null : $subcat;
                                 $period = $newperiod;
-                                // Get or create the period subcategory
+                                // Get or create the period subcategory.
                                 if (empty($subcat)) {
                                     $subcatidnumber = implode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER, $modnumbers) . '.' . $period;
                                     $subcat = self::get_subcategory_by_idnumber($subcatidnumber);
-                                    // create category
+                                    // Create category.
                                     if (empty($subcat)) {
                                         $subcat = $this->create_subcategory($this->create_period_category_name($period), $cat->id, $subcatidnumber);
                                     }
                                 }
 
-                                // Get existing course
+                                // Get existing course.
                                 $moodlecourse = $this->get_course_by_idnumber($event->anlassNummer, $subcat->id, $catoptions);
                                 if ($moodlecourse) {
-                                    // Option gm for "gemeinsame Modulanlässe"
+                                    // Option gm for "gemeinsame Modulanlässe".
                                     if (in_array("gm", $catoptions)) {
                                         if ($this->enrolplugin->instance_exists_by_eventnumber($moodlecourse, $event->anlassNummer)) {
-                                            // Main Moodle course have got already an enrolment
+                                            // Main Moodle course have got already an enrolment.
                                             continue;
                                         }
                                     } else {
-                                        // Do nothing, course was already created previously
+                                        // Do nothing, course was already created previously.
                                         continue;
                                     }
                                 } else {
-                                    // Create an empty course
+                                    // Create an empty course.
                                     $moodlecourse = $this->create_new_course($event, $subcat->id);
                                 }
 
-                                // Add Evento enrolment instance ONLY if the instance is not in the course
+                                // Add Evento enrolment instance ONLY if the instance is not in the course.
                                 if (isset($moodlecourse) && isset($this->enrolplugin) && enrol_is_enabled('evento')) {
                                     $fields = $this->enrolplugin->get_instance_defaults();
                                     if (in_array("gm", $catoptions)) {
-                                        // for "gemeinsame Module" add enrolment with alternative event number
+                                        // for "gemeinsame Module" add enrolment with alternative event number.
                                         $fields = $this->enrolplugin->set_custom_coursenumber($fields, $event->anlassNummer);
                                         $fields['name'] = 'Evento ' . $event->anlassNummer;
                                     }
@@ -264,7 +265,7 @@ class local_eventocoursecreation_course_creation {
         $params = array('catidnprefix' => $catidnprefix . "%");
         $result = self::get_category_records($whereclause, $params);
 
-        // Exclude Categories with period like .HS17 or .FS17
+        // Exclude Categories with period like .HS17 or .FS17.
         $result = array_filter($result,
                             function ($var) {
                                 return (!stripos($var->idnumber, '.' . LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
@@ -322,9 +323,9 @@ class local_eventocoursecreation_course_creation {
      */
     public static function get_module_ids($idnumber) {
         $result = array();
-        // Skip Options
+        // Skip Options.
         $result = explode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER, $idnumber);
-        // First "Option are always idnumbers"
+        // First "Option are always idnumbers".
         $result = reset($result);
         $result = explode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER, $result);
         $idnprefix = LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX;
@@ -346,7 +347,7 @@ class local_eventocoursecreation_course_creation {
     protected static function get_coursecat_options($idnumber) {
         $result = array();
         $result = explode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER, $idnumber);
-        // Skipt First element, Because these are the evento idnumbers
+        // Skipt First element, Because these are the evento idnumbers.
         array_shift($result);
         return $result;
     }
@@ -365,7 +366,7 @@ class local_eventocoursecreation_course_creation {
         $result = null;
 
         if (isset($eventnumber)) {
-            // Filter to get the substring with HS or FS prefix
+            // Filter to get the substring with HS or FS prefix.
             $modnumbers = explode('.', $eventnumber);
             $modnumbers = array_filter($modnumbers,
                                 function ($var) {
@@ -377,8 +378,9 @@ class local_eventocoursecreation_course_creation {
         }
 
         // Is the term set or valid ?
-        if (!isset($result) || (!stristr($result, LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX) && !stristr($result, LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX))) {
-            // Get the default term string like HS17 or FS17
+        if (!isset($result) || (!stristr($result, LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
+            && !stristr($result, LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX))) {
+            // Get the default term string like HS17 or FS17.
             if (isset($eventstarttime)) {
                 $month = date('n', $eventstarttime);
                 $year = date('y', $eventstarttime);
@@ -432,28 +434,28 @@ class local_eventocoursecreation_course_creation {
         $return = false;
         $now = time();
 
-        // Check if this event is from the same course of studies?
+        // Check if this event is from the same course of studies?.
         if (isset($this->modnrprefix)) {
             $shortmodnr = str_replace($this->modnrprefix, "", ($var->anlassNummer));
-            // is the next character in lower case? -> so it is another course of studies
+            // is the next character in lower case? -> so it is another course of studies.
             if (!ctype_lower(substr($shortmodnr, 0, 1))) {
                 $return = true;
             }
         }
 
-        // Has start date?
+        // Has start date?.
         if ($return && empty($var->anlassDatumVon)) {
             $return = false;
         }
 
-        // Future start date
+        // Future start date.
         $fromdate = strtotime($var->anlassDatumVon);
         if ($return && ($fromdate < $now)) {
             $return = false;
         }
         if ($return) {
-            // Not "Abgesagt" 
-            // todo move value to config
+            // Not "Abgesagt".
+            // Todo move value to config.
             if ($var->idAnlassStatus == '10270') {
                 $return = false;
             }
@@ -503,7 +505,7 @@ class local_eventocoursecreation_course_creation {
 
         } catch (moodle_exception $ex) {
             if (($ex->errorcode == 'courseidnumbertaken') || ($ex->errorcode == 'shortnametaken')) {
-                // course already exists not needed to be created
+                // Course already exists not needed to be created.
                 debugging("{$ex->errorcode} for course shortname {$newcourse->shortname}", DEBUG_DEVELOPER);
                 return $return;
             } else {
@@ -552,7 +554,7 @@ class local_eventocoursecreation_course_creation {
 
         $result = false;
         $params = array();
-        // Lookup course in temp. array
+        // Lookup course in temp. array.
         if (array_key_exists($idnumber, $this->moodlecourses)) {
             $result = $this->moodlecourses[$idnumber];
         }
@@ -578,7 +580,7 @@ class local_eventocoursecreation_course_creation {
                 $result = $DB->get_record('course', $params);
             }
         }
-        // Set lookup table
+        // Set lookup table.
         if (!empty($result)) {
             $this->moodlecourses[$result->idnumber] = $result;
         }
@@ -614,7 +616,7 @@ class local_eventocoursecreation_course_creation {
     protected function create_period_category_name($period, $starttimestamp = null) {
         global $DB;
 
-        // Todo generate a different categoryname for the period
+        // Todo generate a different categoryname for the period.
 
         return $period;
     }
