@@ -21,33 +21,10 @@
  * @copyright  2017 HTW Chur Roger Barras
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace local_eventocoursecreation;
 
 defined('MOODLE_INTERNAL') || die();
-/**
- * Delimiter for different module numbers in the category idnumber
- */
-define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER', '|');
 
-/**
- * Delimiter to separate different in the category idnumber
- */
-define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER', '§');
-
-/**
- * Prefix for category idnumbers which contains module numbers
- */
-define('LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX', 'mod.');
-
-/**
- * Prefix for spring term inside evento eventnumbers
- */
-define('LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX', 'FS');
-
-/**
- * Prefix for autumn term inside evento eventnumbers
- */
-define('LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX', 'HS');
+require_once($CFG->dirroot . '/local/eventocoursecreation/locallib.php');
 
 /**
  * Class definition for the evento course creation
@@ -56,7 +33,6 @@ define('LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX', 'HS');
  * @copyright  2017 HTW Chur Roger Barras
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class local_eventocoursecreation_course_creation {
     // Plugin configuration.
     private $config;
@@ -79,7 +55,6 @@ class local_eventocoursecreation_course_creation {
     /**
      * Initialize the service keeping reference to the soap-client
      *
-     * @param SoapClient $client
      */
     public function __construct() {
         $this->config = get_config('local_eventocoursecreation');
@@ -92,9 +67,10 @@ class local_eventocoursecreation_course_creation {
      *
      * @param progress_trace $trace
      * @param int $categoryid one category, empty means all
+     * @param bool $force if true, forces the execution, regardless if we are in a timeslot
      * @return int 0 means ok, 1 means error, 2 means plugin disabled
      */
-    public function course_sync(progress_trace $trace, $categoryid = null) {
+    public function course_sync(progress_trace $trace, $categoryid = null, $force = false) {
         global $CFG;
         try {
             require_once($CFG->libdir. '/coursecatlib.php');
@@ -125,12 +101,20 @@ class local_eventocoursecreation_course_creation {
             if (isset($categoryid)) {
                 $categories = self::get_category_records("cc.id = :catid", array('catid' => $categoryid));
             } else {
-                $categories = self::get_categories(LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX);
+                $categories = self::get_categories(EVENTOCOURSECREATION_IDNUMBER_PREFIX);
             }
 
             foreach ($categories as $cat) {
                 $catoptions = self::get_coursecat_options($cat->idnumber);
                 $modnumbers = self::get_module_ids($cat->idnumber);
+
+                // Check if we are in a timeslot for course creation.
+                if (!$force) {
+                    $setting = local_eventocoursecreation_setting::get($cat->id);
+                    if (!$this->is_creation_allowed($setting)) {
+                        continue;
+                    }
+                }
 
                 foreach ($modnumbers as $modn) {
                     try {
@@ -143,13 +127,14 @@ class local_eventocoursecreation_course_creation {
                             try {
                                 $starttime = strtotime($event->anlassDatumVon);
                                 $starttime = $starttime ? $starttime : null;
+
                                 $newperiod = self::get_module_period($event->anlassNummer, $starttime);
                                 // Reset subcat if not in the same period.
                                 $subcat = ($period != $newperiod) ? null : $subcat;
                                 $period = $newperiod;
                                 // Get or create the period subcategory.
                                 if (empty($subcat)) {
-                                    $subcatidnumber = implode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER, $modnumbers) . '.' . $period;
+                                    $subcatidnumber = implode(EVENTOCOURSECREATION_IDNUMBER_DELIMITER, $modnumbers) . '.' . $period;
                                     $subcat = self::get_subcategory_by_idnumber($subcatidnumber);
                                     // Create category.
                                     if (empty($subcat)) {
@@ -225,7 +210,6 @@ class local_eventocoursecreation_course_creation {
                                             . "sync of catid: {$cat->id}; eventnr.:{$modn};");
                     }
                 }
-
             }
         } catch (SoapFault $fault) {
             debugging("Error Soapfault: ". $fault->__toString());
@@ -268,12 +252,139 @@ class local_eventocoursecreation_course_creation {
         // Exclude Categories with period like .HS17 or .FS17.
         $result = array_filter($result,
                             function ($var) {
-                                return (!stripos($var->idnumber, '.' . LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
-                                        && !stripos($var->idnumber, '.' . LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX));
+                                return (!stripos($var->idnumber, '.' . EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
+                                        && !stripos($var->idnumber, '.' . EVENTOCOURSECREATION_SPRINGTERM_PREFIX));
                             }
         );
 
         return $result;
+    }
+
+    /**
+     * Check if the creation is in a timeslot for the creation.
+     *
+     * @param local_eventocoursecreation_setting $setting record of eventocoursecreation
+     * @return bool true if creation should proceed
+     */
+    public function is_creation_allowed(local_eventocoursecreation_setting $setting) {
+        $allowed = false;
+
+        // Init time.
+        $now = time();
+        $nowday = (int)date("d", $now);
+        $nowmonth = (int)date("m", $now);
+        $nowyear = (int)date("y", $now);
+        $now = mktime(0, 0, 0, $nowmonth, $nowday, $nowyear);
+
+        // Spring Term.
+        // Set starttime for the spring.
+        $springday = (int)$setting->starttimespringtermday;
+        $springmonth = (int)$setting->starttimespringtermmonth;
+        $springyear = $nowyear;
+        $springtime = mktime(0, 0, 0, $springmonth, $springday, $springyear);
+
+        // Set endtime for the spring.
+        $springendday = (int)$this->config->endtimespringtermday;
+        $springendmonth = (int)$this->config->endtimespringtermmonth;
+        $springendyear = $nowyear;
+        $springendtime = mktime(0, 0, 0, $springendmonth, $springendday, $springendyear);
+
+        // Set the timeslot correclty.
+        if ($springtime > $springendtime) {
+            if ($now < $springtime) {
+                // Set springtime one year back, to check if we are in a valid timeslot.
+                $springyear = $springyear - 1;
+                $springtime = mktime(0, 0, 0, $springmonth, $springday, $springyear);
+                debugging('Set springtime one year back, to check if we are in a valid timeslot.; allowed:' . var_export($allowed, true) .
+                            '; now:' . $now . '; springtime' . $springtime, DEBUG_DEVELOPER);
+            } else {
+                // Set end time + 1 year;
+                // Set springendtime one year forward to create a valid timeslot.
+                $springendyear = $springyear + 1;
+                $springendtime = mktime(0, 0, 0, $springendmonth, $springendday, $springendyear);
+                debugging('Set springendtime one year forward to create a valid timeslot.; allowed:' . var_export($allowed, true) .
+                            '; now:' . $now . '; springendtime' . $springendtime, DEBUG_DEVELOPER);
+            }
+        }
+
+        // Check srping term.
+        if ($now >= $springtime && ($now <= $springendtime)) {
+            if ((int)$setting->execonlyonstarttimespringterm == 1) {
+                if ($now === $springtime) {
+                    $allowed = true;
+                    debugging('execonlyonstarttimespringterm and now === springtime; allowed:' . var_export($allowed, true) .
+                                '; now:' . $now . '; springtime' . $springtime, DEBUG_DEVELOPER);
+                } else {
+                    $allowed = false;
+                    debugging('execonlyonstarttimespringterm and now != springtime; allowed:' . var_export($allowed, true) .
+                                '; now:' . $now . '; springtime' . $springtime, DEBUG_DEVELOPER);
+                }
+            } else {
+                $allowed = true;
+                debugging('execonlyonstarttimespringterm = 0; allowed:' . var_export($allowed, true) .
+                            '; now:' . $now . '; springtime' . $springtime, DEBUG_DEVELOPER);
+            }
+        } else {
+            $allowed = false;
+            debugging('not in spring timeslot; allowed:' . var_export($allowed, true) .
+                        '; now:' . $now . '; springtime' . $springtime, DEBUG_DEVELOPER);
+        }
+
+        // Autum Term.
+        // if already allowed, skip the autumn term check.
+        if (!$allowed) {
+            $autumnday = (int)$setting->starttimeautumntermday;
+            $autumnmonth = (int)$setting->starttimeautumntermmonth;
+            $autumnyear = $nowyear;
+            $autumntime = mktime(0, 0, 0, $autumnmonth, $autumnday, $autumnyear);
+
+            // Set endtime for the autumn.
+            $autumnendday = (int)$this->config->endtimeautumntermday;
+            $autumnendmonth = (int)$this->config->endtimeautumntermmonth;
+            $autumnendyear = $nowyear;
+            $autumnendtime = mktime(0, 0, 0, $autumnendmonth, $autumnendday, $autumnendyear);
+
+            // Set the timeslot correclty.
+            if ($autumntime > $autumnendtime) {
+                if ($now < $autumntime) {
+                    // Set autumntime one year back, to check if we are in a valid timeslot.
+                    $autumnyear = $autumnyear - 1;
+                    $autumntime = mktime(0, 0, 0, $autumnmonth, $autumnday, $autumnyear);
+                    debugging('Set autumntime one year back, to check if we are in a valid timeslot.; allowed:' . var_export($allowed, true) .
+                                '; now:' . $now . '; autumntime' . $autumntime, DEBUG_DEVELOPER);
+                } else {
+                    // Set autumnendtime one year forward to create a valid timeslot.
+                    $autumnendyear = $autumnendyear + 1;
+                    $autumnendtime = mktime(0, 0, 0, $autumnendmonth, $autumnendday, $autumnendyear);
+                    debugging('Set autumnendtime one year forward to create a valid timeslot.; allowed:' . var_export($allowed, true) .
+                                '; now:' . $now . '; autumnendtime' . $autumnendtime, DEBUG_DEVELOPER);
+                }
+            }
+
+            // Check the autumn term.
+            if ($now >= $autumntime && ($now <= $autumnendtime)) {
+                if ((int)$setting->execonlyonstarttimeautumnterm == 1) {
+                    if ($now === $autumntime) {
+                        $allowed = true;
+                        debugging('execonlyonstarttimeautumnterm and now === autumntime; allowed:' . var_export($allowed, true) .
+                                    '; now:' . $now . '; autumntime' . $autumntime, DEBUG_DEVELOPER);
+                    } else {
+                        $allowed = false;
+                        debugging('execonlyonstarttimeautumnterm and now != autumntime; allowed:' . var_export($allowed, true) .
+                                    '; now:' . $now . '; autumntime' . $autumntime, DEBUG_DEVELOPER);
+                    }
+                } else {
+                    $allowed = true;
+                    debugging('execonlyonstarttimeautumnterm = 0; allowed: ' . var_export($allowed, true) .
+                                '; now:' . $now . '; autumntime:' . $autumntime, DEBUG_DEVELOPER);
+                }
+            } else {
+                $allowed = false;
+                debugging('not in autumn timeslot; allowed:' . var_export($allowed, true) .
+                            '; now:' . $now . '; autumntime:' . $autumntime, DEBUG_DEVELOPER);
+            }
+        }
+        return $allowed;
     }
 
     /**
@@ -324,11 +435,11 @@ class local_eventocoursecreation_course_creation {
     public static function get_module_ids($idnumber) {
         $result = array();
         // Skip Options.
-        $result = explode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER, $idnumber);
+        $result = explode(EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER, $idnumber);
         // First "Option are always idnumbers".
         $result = reset($result);
-        $result = explode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_DELIMITER, $result);
-        $idnprefix = LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX;
+        $result = explode(EVENTOCOURSECREATION_IDNUMBER_DELIMITER, $result);
+        $idnprefix = EVENTOCOURSECREATION_IDNUMBER_PREFIX;
         $result = array_filter($result,
                             function ($var) use ($idnprefix) {
                                 return (strncasecmp($var, $idnprefix, strlen($idnprefix)) == 0);
@@ -346,7 +457,7 @@ class local_eventocoursecreation_course_creation {
      */
     protected static function get_coursecat_options($idnumber) {
         $result = array();
-        $result = explode(LOCAL_EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER, $idnumber);
+        $result = explode(EVENTOCOURSECREATION_IDNUMBER_OPTIONS_DELIMITER, $idnumber);
         // Skipt First element, Because these are the evento idnumbers.
         array_shift($result);
         return $result;
@@ -370,25 +481,25 @@ class local_eventocoursecreation_course_creation {
             $modnumbers = explode('.', $eventnumber);
             $modnumbers = array_filter($modnumbers,
                                 function ($var) {
-                                    return (strtoupper(substr($var, 0, 2 )) == LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX
-                                            || strtoupper(substr($var, 0, 2 )) == LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX);
+                                    return (strtoupper(substr($var, 0, 2 )) == EVENTOCOURSECREATION_AUTUMNTERM_PREFIX
+                                            || strtoupper(substr($var, 0, 2 )) == EVENTOCOURSECREATION_SPRINGTERM_PREFIX);
                                 }
             );
             $result = reset($modnumbers);
         }
 
         // Is the term set or valid ?
-        if (!isset($result) || (!stristr($result, LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
-            && !stristr($result, LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX))) {
+        if (!isset($result) || (!stristr($result, EVENTOCOURSECREATION_AUTUMNTERM_PREFIX)
+            && !stristr($result, EVENTOCOURSECREATION_SPRINGTERM_PREFIX))) {
             // Get the default term string like HS17 or FS17.
             if (isset($eventstarttime)) {
                 $month = date('n', $eventstarttime);
                 $year = date('y', $eventstarttime);
                 $fsmonths = array('2', '3', '4', '5', '6', '7');
                 if (in_array($month, $fsmonths)) {
-                    $term = LOCAL_EVENTOCOURSECREATION_SPRINGTERM_PREFIX;
+                    $term = EVENTOCOURSECREATION_SPRINGTERM_PREFIX;
                 } else {
-                    $term = LOCAL_EVENTOCOURSECREATION_AUTUMNTERM_PREFIX;
+                    $term = EVENTOCOURSECREATION_AUTUMNTERM_PREFIX;
                 }
                 $result = $term . $year;
             }
@@ -460,6 +571,7 @@ class local_eventocoursecreation_course_creation {
                 $return = false;
             }
         }
+        /* Removed, because we can set the creation start time now (v2.0). May be we do a option for this in the future.
         if ($return) {
             // Has enrolments?
             $eventoenrolments = local_evento_evento_service::to_array($this->eventoservice->get_enrolments_by_eventid($var->idAnlass));
@@ -467,6 +579,7 @@ class local_eventocoursecreation_course_creation {
                 $return = false;
             }
         }
+        */
         return $return;
     }
 
@@ -491,7 +604,7 @@ class local_eventocoursecreation_course_creation {
                 throw new moodle_exception('noeventnumberset', 'local_eventocoursecreation', null, null,
                                             'no "anlassNummer" set to create an new course');
             }
-            $newcourse->shortname = trim(str_replace(LOCAL_EVENTOCOURSECREATION_IDNUMBER_PREFIX, "", $event->anlassNummer));
+            $newcourse->shortname = trim(str_replace(EVENTOCOURSECREATION_IDNUMBER_PREFIX, "", $event->anlassNummer));
             $newcourse->fullname = trim($event->anlassBezeichnung);
             $newcourse->category = $categoryid;
             if (!empty($event->anlassDatumVon)) {

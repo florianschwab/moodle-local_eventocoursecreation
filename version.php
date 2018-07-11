@@ -24,12 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2017211102; // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016120500; // Requires this Moodle version
-// $plugin->cron      = 0;          // Period for cron to check this module (secs)
-$plugin->component = 'local_eventocoursecreation'; // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2018220503; // The current module version (Date: YYYYMMDDXX)
+$plugin->requires  = 2016120500; // Requires this Moodle version.
+$plugin->component = 'local_eventocoursecreation';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "1.0.2"; // User-friendly version number
+$plugin->release   = "2.0"; // User-friendly version number.
 $plugin->dependencies = array(
     'local_evento' => 2017071302
 );

@@ -18,12 +18,43 @@
  * Strings for component 'local_eventocoursecreation', language 'en'
  *
  * @package    local_eventocoursecreation
- * @copyright  2017, HTW chur {@link http://www.htwchur.ch}
+ * @copyright  2018, HTW chur {@link http://www.htwchur.ch}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Evento Kurserstellung';
-$string['pluginname_desc'] = 'Erstellt neue Moodle Kurse aufgrund der Module in Evento.';
+defined('MOODLE_INTERNAL') || die;
+
+$string['autumnendmonth'] = 'Endmonat';
+$string['autumnendmonth_help'] = 'Monat, bis zu welchen für das Herbstsemester die Kurserstellung durchgeführt wird.';
+$string['autumnendday'] = 'Endtag';
+$string['autumnendday_help'] = 'Tag, bis zu welchen für das Herbstsemester die Kurserstellung durchgeführt wird.';
+$string['autumnstartday'] = 'Starttag';
+$string['autumnstartday_help'] = 'Tag, ab welchen für das Herbstsemester die Kurserstellung durchgeführt wird. (nur Werte von 1 bis 31 erlaubt)';
+$string['autumnstartmonth'] = 'Startmonat';
+$string['autumnstartmonth_help'] = 'Monat, in welchem für das Herbstsemester die Kurserstellung durchgeführt wird. (nur Werte von 1 bis 12 erlaubt)';
+$string['dayinvalid'] = 'Tag ist kein gültiger Monatstag (nur Werte von 1 bis 31 erlaubt)';
+$string['editcreationsettings'] = 'Einstellungen für die Evento-Kurserstellung bearbeiten ';
 $string['enableplugin'] = 'Plugin aktivieren';
 $string['enableplugin_help'] = 'Plugin Aktiviern oder Deaktivieren';
 $string['eventosynccoursecreation'] = 'Evento Kurserstellung synchronisieren';
+$string['execonlyonstarttimeautumnterm'] = 'Kurserstellung nur am Startdatum ausführen';
+$string['execonlyonstarttimeautumnterm_help'] = 'Wenn gesetzt, wird die Kurserstellung nur am Starttag ausgeführt. Ansonsten wird die Kurserstellung bis kurz nach dem Semsterstart täglich ausgeführt, falls es neue Kurse gibt.';
+$string['execonlyonstarttimespringterm'] = 'Kurserstellung nur am Startdatum ausführen';
+$string['execonlyonstarttimespringterm_help'] = 'Wenn gesetzt, wird die Kurserstellung nur am Starttag ausgeführt. Ansonsten wird die Kurserstellung bis kurz nach dem Semsterstart täglich ausgeführt, falls es neue Kurse gibt.';
+$string['idnumber'] = 'Studiengang (Kategorie ID)';
+$string['idnumber_help'] = 'Studiengang welcher in der Kategorie ID gespeichert wird.';
+$string['monthinvalid'] = 'Monat ist ungültig (nur Werte von 1 bis 12 erlaubt)';
+$string['pluginname'] = 'Evento Kurserstellung';
+$string['pluginname_desc'] = 'Erstellt neue Moodle Kurse aufgrund der Module in Evento.';
+$string['springendmonth'] = 'Endmonat';
+$string['springendmonth_help'] = 'Monat, bis zu welchen für das Frühlingssemester die Kurserstellung durchgeführt wird.';
+$string['springendday'] = 'Endtag';
+$string['springendday_help'] = 'Tag, bis zu welchen für das Frühlingssemester die Kurserstellung durchgeführt wird.';
+$string['springstartday'] = 'Starttag';
+$string['springstartday_help'] = 'Tag, ab welchen für das Frühlingssemester die Kurserstellung durchgeführt wird.';
+$string['springstartmonth'] = 'Startmonat';
+$string['springstartmonth_help'] = 'Monat, in welchem für das Frühlingssemester die Kurserstellung durchgeführt wird.';
+$string['startautumnterm'] = 'Herbstsemester';
+$string['startautumnterm_help'] = 'Standardwerte für das Startdatum des Herbstsemesters';
+$string['startspringterm'] = 'Frühlingssemester';
+$string['startspringterm_help'] = 'Standardwerte für das Startdatum des Frühlingssemesters';
