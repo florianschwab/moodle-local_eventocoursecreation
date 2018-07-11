@@ -84,7 +84,7 @@ if ($options['catid']) {
 
 // Instance of enrol_evento_plugin.
 $plugin = new local_eventocoursecreation_course_creation();
-$result = $plugin->course_sync($trace, $catid);
+$result = $plugin->course_sync($trace, $catid, true);
 
 
 exit($result);

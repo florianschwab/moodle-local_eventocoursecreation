@@ -9,15 +9,16 @@ Creating courses with
    * course idnumber like the Evento "Anlassnummer"
    * Added course Evento enrolment method
 
-Only include Evento modules to create moodle courses, which are editded at most one year ago,
- have at least one active enrolment and which have the start date in the future.
+Only include Evento modules to create moodle courses, which are editded at most one year ago and which have the start date in the future.
  
  Additional Features:
-   * Option to create several course of studies in one category
-   * Option to create common courses for multiple Evento events
+   * Option to create several course of studies in one category (deprecated)
+   * Option to create common courses for multiple Evento events (deprecated)
 
 # Config
 Requires the local_evento plugin for the webservices access to Evento.
+   * Set start and end time for the spring and autumn term course creation
+   * Set an option to execute only on one specific day.
 
 ## License
 * Copyright (C) HTW Chur
