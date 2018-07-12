@@ -39,6 +39,7 @@ class local_eventocoursecreation_setting {
     protected static $coursecreationfields = array(
         'id' => array('id', 0),
         'category' => array('ca', 0),
+        'enablecatcoursecreation' => array('en', 1),
         'starttimespringtermday' => array('sd', EVENTOCOURSECREATION_DEFAULT_SPRINGTERM_STARTDAY),
         'starttimespringtermmonth' => array('sm', EVENTOCOURSECREATION_DEFAULT_SPRINGTERM_STARTMONTH),
         'execonlyonstarttimespringterm' => array('es', 1),
@@ -56,6 +57,9 @@ class local_eventocoursecreation_setting {
 
     /** @var int */
     protected $category;
+
+    /** @var int */
+    protected $enablecatcoursecreation = 1;
 
     /** @var int */
     protected $starttimespringtermday = EVENTOCOURSECREATION_DEFAULT_SPRINGTERM_STARTDAY;
@@ -292,6 +296,7 @@ class local_eventocoursecreation_setting {
         $newsetting->coursevisibility = $data->coursevisibility;
         $newsetting->newsitemsnumber = $data->newsitemsnumber;
         $newsetting->numberofsections = $data->numberofsections;
+        $newsetting->enablecatcoursecreation = $data->enablecatcoursecreation;
 
         $newsetting->timemodified = time();
 
