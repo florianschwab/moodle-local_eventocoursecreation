@@ -45,6 +45,9 @@ class local_eventocoursecreation_setting {
         'starttimeautumntermday' => array('ad', EVENTOCOURSECREATION_DEFAULT_AUTUMNTERM_STARTDAY),
         'starttimeautumntermmonth' => array('am', EVENTOCOURSECREATION_DEFAULT_AUTUMNTERM_STARTMONTH),
         'execonlyonstarttimeautumnterm' => array('ea', 1),
+        'coursevisibility' => array('cv', 0),
+        'newsitemsnumber' => array('cn', 0),
+        'numberofsections' => array('cs', 0),
         'timemodified' => null, // Not cached.
     );
 
@@ -71,6 +74,15 @@ class local_eventocoursecreation_setting {
 
     /** @var int */
     protected $execonlyonstarttimeautumnterm = 1;
+
+    /** @var int */
+    protected $coursevisibility = 0;
+
+    /** @var int */
+    protected $newsitemsnumber = 0;
+
+    /** @var int */
+    protected $numberofsections = 0;
 
     /** @var int */
     protected $timemodified = false;
@@ -148,6 +160,9 @@ class local_eventocoursecreation_setting {
         $this->starttimeautumntermday = $config->starttimeautumntermday;
         $this->starttimeautumntermmonth = $config->starttimeautumntermmonth;
         $this->execonlyonstarttimeautumnterm = $config->execonlyonstarttimeautumnterm;
+        $this->coursevisibility = $config->coursevisibility;
+        $this->newsitemsnumber = $config->newsitemsnumber;
+        $this->numberofsections = $config->numberofsections;
 
         context_helper::preload_from_record($record);
         foreach ($record as $key => $val) {
@@ -274,7 +289,9 @@ class local_eventocoursecreation_setting {
         }
 
         $newsetting->execonlyonstarttimespringterm = $data->execonlyonstarttimespringterm;
-        $newsetting->execonlyonstarttimeautumnterm = $data->execonlyonstarttimeautumnterm;
+        $newsetting->coursevisibility = $data->coursevisibility;
+        $newsetting->newsitemsnumber = $data->newsitemsnumber;
+        $newsetting->numberofsections = $data->numberofsections;
 
         $newsetting->timemodified = time();
 
