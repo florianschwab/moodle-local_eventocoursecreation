@@ -50,8 +50,6 @@ class local_eventocoursecreation_course_creation {
     // This is for the course of studies modulenumber prefix.
     protected $modnrprefix;
 
-
-
     /**
      * Initialize the service keeping reference to the soap-client
      *
@@ -118,7 +116,7 @@ class local_eventocoursecreation_course_creation {
 
                 foreach ($modnumbers as $modn) {
                     try {
-                        // Get all Evento moduls with the same eventonumber p.I.: "mod.bsp%" and aktive with a future start date.
+                        // Get all Evento moduls with the same eventonumber (p.I.: "mod.bsp%"), active and with a future start date.
                         $events = $this->get_future_events($modn);
                         $subcat = null;
                         $period = "";
@@ -604,8 +602,9 @@ class local_eventocoursecreation_course_creation {
                 throw new moodle_exception('noeventnumberset', 'local_eventocoursecreation', null, null,
                                             'no "anlassNummer" set to create an new course');
             }
-            $newcourse->shortname = trim(str_replace(EVENTOCOURSECREATION_IDNUMBER_PREFIX, "", $event->anlassNummer));
-            $newcourse->fullname = trim($event->anlassBezeichnung);
+            $naming = new local_eventocoursecreation_course_naming($event->anlassBezeichnung, $event->anlassNummer);
+            $newcourse->fullname = $naming->create_long_course_name();
+            $newcourse->shortname = $naming->create_short_course_name();
             $newcourse->category = $categoryid;
             if (!empty($event->anlassDatumVon)) {
                 $newcourse->startdate = strtotime($event->anlassDatumVon);
@@ -751,4 +750,109 @@ class local_eventocoursecreation_course_creation {
 
         return $subcat;
     }
+}
+
+/**
+ * Class used to create long and short name for moodle
+ *
+ * @package    local_eventocoursecreation
+ * @copyright  2018 HTW Chur Roger Barras
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class local_eventocoursecreation_course_naming {
+    // Plugin configuration.
+    protected $config;
+    // Normal long name of the module from evento.
+    protected $eventolongname = '';
+    // Module number from evento like "mod.bpsEA.HS18_BSC.001".
+    protected $eventomodulenumber = '';
+    // Term period of the module.
+    protected $period = '';
+    // Course of studies abrevation.
+    protected $courseofstudies = '';
+    // Module name abrevation.
+    protected $moduleabr = '';
+    // Numbertoken the evento module number.
+    protected $number = '';
+
+    /**
+     * Initialize the instance of local_eventocoursecreation_course_naming
+     *
+     * @param string $eventolongname Normal long name of the module from evento
+     * @param string $eventomodulenumber Module number from evento like "mod.bpsEA.HS18_BSC.001"
+     * @param string $modulstarttime (option) Starttime of the module to determine if we are in spring or autumn term
+     */
+    public function __construct($eventolongname, $eventomodulenumber, $modulstarttime = null) {
+        $this->eventolongname = $eventolongname;
+        $this->eventomodulenumber = $eventomodulenumber;
+        $this->config = get_config('local_eventocoursecreation');
+        $this->period = local_eventocoursecreation_course_creation::get_module_period($this->eventomodulenumber, $modulstarttime);
+        // Remove trailing info after a '_'
+        $this->period = reset(preg_split('/(?=[_])/', $this->period, -1));
+
+        $modtokens = array();
+        $modtokens = explode('.', $this->eventomodulenumber);
+
+        $this->number = end($modtokens);
+        if (!isset($this->number)) {
+            $this->number = '';
+        }
+        reset($modtokens);
+
+        // Get courseofstudies and moduleabr out of the module token.
+        $module = next($modtokens);
+        $chunks = preg_split('/(?=[A-Z])/', $module, -1);
+
+        $this->courseofstudies = array_shift($chunks);
+        if (!isset($this->courseofstudies)) {
+            $this->courseofstudies = '';
+        }
+
+        $this->moduleabr = str_replace($this->courseofstudies, '', $module);
+        if (!isset($this->moduleabr)) {
+            $this->moduleabr = $this->eventolongname;
+        }
+    }
+
+    /**
+     * Creates a long name for a moodle course
+     *
+     * @return string long name for a moodle course
+     */
+    public function create_long_course_name() {
+        return $this->create_name($this->config->longcoursenaming);
+    }
+
+    /**
+     * Creates a short name for a moodle course
+     *
+     * @return string short name for a moodle course
+     */
+    public function create_short_course_name() {
+        global $DB;
+        $namenumber = $this->create_name($this->config->shortcoursenaming);
+        $name = str_replace($this->number, '', $namenumber);
+        // Only the the number in shortname if there are 2 Modules with the same name.
+        // Check if the shortname already exists.
+        if ($DB->record_exists('course', array('shortname' => $name))) {
+            $name = $namenumber;
+        }
+        return $name;
+    }
+
+    /**
+     * Creates a name for a cours out of a specific naming
+     *
+     * @return string name for a naming
+     */
+    protected function create_name($naming) {
+        $name = $naming;
+        $name = str_replace(EVENTOCOURSECREATION_NAME_PH_EVENTO_NAME, $this->eventolongname, $name);
+        $name = str_replace(EVENTOCOURSECREATION_NAME_PH_EVENTO_ABR, $this->moduleabr, $name);
+        $name = str_replace(EVENTOCOURSECREATION_NAME_PH_PERIOD, $this->period, $name);
+        $name = str_replace(EVENTOCOURSECREATION_NAME_PH_COS, $this->courseofstudies, $name);
+
+        return $name;
+    }
+
 }
