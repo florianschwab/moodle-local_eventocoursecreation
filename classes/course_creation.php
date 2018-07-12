@@ -107,6 +107,10 @@ class local_eventocoursecreation_course_creation {
                 $modnumbers = self::get_module_ids($cat->idnumber);
 
                 $setting = local_eventocoursecreation_setting::get($cat->id);
+                if ($setting->enablecatcoursecreation == 0) {
+                    // Course creation not enabled for this category.
+                    continue;
+                }
                 // Check if we are in a timeslot for course creation.
                 if (!$force) {
                     if (!$this->is_creation_allowed($setting)) {

@@ -7,3 +7,4 @@
 *   Neue Einstellung für die Kurssichtbarkeit von neuen Kursen
 *   Neue Einstellung für die Anzahl von Abschnitten in neuen Kursen
 *   Neue Einstellung für die Anzahl von Ankündigungen
+*   Neue Einstellung um die Kurserstellung für eine Kategorie zu deaktivieren

@@ -50,6 +50,10 @@ class local_eventocoursecreation_setting_form extends moodleform {
         $mform->addElement('header', 'general', get_string('general', 'form'));
         $mform->setExpanded('general');
 
+        $mform->addElement('advcheckbox', 'enablecatcoursecreation',
+                            get_string('enablecatcoursecreation', 'local_eventocoursecreation'), '', null, array(0, 1));
+        $mform->addHelpButton('enablecatcoursecreation', 'enablecatcoursecreation', 'local_eventocoursecreation');
+
         // Coursofstudies = category idnumber.
         $mform->addElement('text', 'idnumber', get_string('idnumber', 'local_eventocoursecreation'), array('size' => '15'));
         $mform->setType('idnumber', PARAM_TEXT);
