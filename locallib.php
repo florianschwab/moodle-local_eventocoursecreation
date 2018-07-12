@@ -62,3 +62,30 @@ define('EVENTOCOURSECREATION_SPRINGTERM_PREFIX', 'FS');
  * Prefix for autumn term inside evento eventnumbers
  */
 define('EVENTOCOURSECREATION_AUTUMNTERM_PREFIX', 'HS');
+
+
+// Name Placeholders for the cours names.
+/**
+ * Placeholder for the evento long name
+ */
+define('EVENTOCOURSECREATION_NAME_PH_EVENTO_NAME', '@EVENTONAME@');
+/**
+ * Placeholder for the evento name abrevation
+ */
+define('EVENTOCOURSECREATION_NAME_PH_EVENTO_ABR', '@EVENTOABK@');
+/**
+ * Placeholder for the period
+ */
+define('EVENTOCOURSECREATION_NAME_PH_PERIOD', '@PERIODE@');
+/**
+ * Placeholder for the course of studies
+ */
+define('EVENTOCOURSECREATION_NAME_PH_COS', '@STG@');
+/**
+ * Default setting value for the long name of a course
+ */
+define('EVENTOCOURSECREATION_NAME_LONGNAME', '@EVENTONAME@ (@STG@) @PERIODE@');
+/**
+ * Default setting value for the short name of a course
+ */
+define('EVENTOCOURSECREATION_NAME_SHORTNAME', '@EVENTOABK@ (@STG@) @PERIODE@');

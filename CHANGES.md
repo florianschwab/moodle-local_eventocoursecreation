@@ -3,3 +3,4 @@
 ## Version 2.0 (2018220503)
 *   Kursberichseinstellungsseite
 *   Zeitpunkt oder Zeitfenster für die Kurserstellung kann für Herbs- und Frühlingsemester gesetzt werden
+*   New naming for course fullname an the course shortname

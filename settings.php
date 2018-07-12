@@ -36,6 +36,17 @@ if ($hassiteconfig) {
         new lang_string('enableplugin', 'local_eventocoursecreation'),
         new lang_string('enableplugin_help', 'local_eventocoursecreation'), 1));
 
+    // Long name setting for courses.
+    $settings->add(new admin_setting_configtext('local_eventocoursecreation/longcoursenaming',
+                    get_string('longcoursenaming', 'local_eventocoursecreation'),
+                    get_string('longcoursenaming_help', 'local_eventocoursecreation'),
+                    EVENTOCOURSECREATION_NAME_LONGNAME, PARAM_TEXT));
+    // Short name setting for courses.
+    $settings->add(new admin_setting_configtext('local_eventocoursecreation/shortcoursenaming',
+        get_string('shortcoursenaming', 'local_eventocoursecreation'),
+        get_string('shortcoursenaming_help', 'local_eventocoursecreation'),
+        EVENTOCOURSECREATION_NAME_SHORTNAME, PARAM_TEXT));
+
     // Days array.
     $days = array();
     for ($i = 1; $i <= 31; $i++) { // From 1 up to 31 days.
