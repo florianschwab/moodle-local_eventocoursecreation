@@ -31,7 +31,8 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_eventocoursecreation', get_string('pluginname', 'local_eventocoursecreation'));
     $ADMIN->add('localplugins', $settings);
     // General Settings.
-    $settings->add(new admin_setting_heading('local_eventocoursecreation_settings', '', get_string('pluginname_desc', 'local_eventocoursecreation')));
+    $settings->add(new admin_setting_heading('local_eventocoursecreation_settings', '',
+                    get_string('pluginname_desc', 'local_eventocoursecreation')));
     $settings->add(new admin_setting_configcheckbox('local_eventocoursecreation/enableplugin',
         new lang_string('enableplugin', 'local_eventocoursecreation'),
         new lang_string('enableplugin_help', 'local_eventocoursecreation'), 1));
@@ -43,20 +44,44 @@ if ($hassiteconfig) {
                     EVENTOCOURSECREATION_NAME_LONGNAME, PARAM_TEXT));
     // Short name setting for courses.
     $settings->add(new admin_setting_configtext('local_eventocoursecreation/shortcoursenaming',
-        get_string('shortcoursenaming', 'local_eventocoursecreation'),
-        get_string('shortcoursenaming_help', 'local_eventocoursecreation'),
-        EVENTOCOURSECREATION_NAME_SHORTNAME, PARAM_TEXT));
+                    get_string('shortcoursenaming', 'local_eventocoursecreation'),
+                    get_string('shortcoursenaming_help', 'local_eventocoursecreation'),
+                    EVENTOCOURSECREATION_NAME_SHORTNAME, PARAM_TEXT));
+
+    // Default values for course setting.
+    $settings->add(new admin_setting_heading('defaultcourssettings',
+                    get_string('defaultcourssettings', 'local_eventocoursecreation'),
+                    get_string('defaultcourssettings_help', 'local_eventocoursecreation')));
+
+    $settings->add(new admin_setting_configcheckbox('local_eventocoursecreation/coursevisibility',
+                    get_string('coursevisibility'),
+                    get_string('coursevisibility_help'), 0));
+
+    $settings->add(new admin_setting_configtext('local_eventocoursecreation/newsitemsnumber',
+                    get_string('newsitemsnumber'),
+                    get_string('newsitemsnumber_help'), 0, PARAM_INT));
+
+    $settings->add(new admin_setting_configtext('local_eventocoursecreation/numberofsections',
+                    get_string('numberofsections', 'local_eventocoursecreation'),
+                    get_string('numberofsections_help', 'local_eventocoursecreation'), 0, PARAM_INT));
 
     // Days array.
-    $days = array();
-    for ($i = 1; $i <= 31; $i++) { // From 1 up to 31 days.
-        $days[$i] = $i;
-    }
+    $days = array_combine(range(1, 31), range(1, 31));
+
     // Months array.
     $months = array();
-    for ($i = 1; $i <= 12; $i++) { // From 1 up to 12 months.
-        $months[$i] = $i;
-    }
+    $months['1'] = get_string('january', 'local_eventocoursecreation');
+    $months['2'] = get_string('february', 'local_eventocoursecreation');
+    $months['3'] = get_string('march', 'local_eventocoursecreation');
+    $months['4'] = get_string('april', 'local_eventocoursecreation');
+    $months['5'] = get_string('may', 'local_eventocoursecreation');
+    $months['6'] = get_string('june', 'local_eventocoursecreation');
+    $months['7'] = get_string('july', 'local_eventocoursecreation');
+    $months['8'] = get_string('august', 'local_eventocoursecreation');
+    $months['9'] = get_string('september', 'local_eventocoursecreation');
+    $months['10'] = get_string('october', 'local_eventocoursecreation');
+    $months['11'] = get_string('november', 'local_eventocoursecreation');
+    $months['12'] = get_string('december', 'local_eventocoursecreation');
 
     // Spring term.
     $settings->add(new admin_setting_heading('startspringterm', get_string('startspringterm', 'local_eventocoursecreation'),

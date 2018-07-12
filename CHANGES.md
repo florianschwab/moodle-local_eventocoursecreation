@@ -1,6 +1,9 @@
 # Changes for local_eventocoursecreation
 
-## Version 2.0 (2018220503)
+## Version 2.0 (2018220500)
 *   Kursberichseinstellungsseite
 *   Zeitpunkt oder Zeitfenster für die Kurserstellung kann für Herbs- und Frühlingsemester gesetzt werden
-*   New naming for course fullname an the course shortname
+*   Neue Namensgebung von Kursen nach dem Entwurf der Namenskonvention
+*   Neue Einstellung für die Kurssichtbarkeit von neuen Kursen
+*   Neue Einstellung für die Anzahl von Abschnitten in neuen Kursen
+*   Neue Einstellung für die Anzahl von Ankündigungen

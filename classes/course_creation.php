@@ -106,9 +106,9 @@ class local_eventocoursecreation_course_creation {
                 $catoptions = self::get_coursecat_options($cat->idnumber);
                 $modnumbers = self::get_module_ids($cat->idnumber);
 
+                $setting = local_eventocoursecreation_setting::get($cat->id);
                 // Check if we are in a timeslot for course creation.
                 if (!$force) {
-                    $setting = local_eventocoursecreation_setting::get($cat->id);
                     if (!$this->is_creation_allowed($setting)) {
                         continue;
                     }
@@ -155,7 +155,7 @@ class local_eventocoursecreation_course_creation {
                                     }
                                 } else {
                                     // Create an empty course.
-                                    $moodlecourse = $this->create_new_course($event, $subcat->id);
+                                    $moodlecourse = $this->create_new_course($event, $subcat->id, $setting);
                                 }
 
                                 // Add Evento enrolment instance ONLY if the instance is not in the course.
@@ -587,9 +587,10 @@ class local_eventocoursecreation_course_creation {
      *
      * @param array $event array of evento
      * @param int $catid category to create
+     * @param local_eventocoursecreation_setting $setting record of eventocoursecreation
      * @return object new course instance
      */
-    protected function create_new_course($event, $categoryid) {
+    protected function create_new_course($event, $categoryid, local_eventocoursecreation_setting $setting) {
         global $CFG;
         try {
             require_once("$CFG->dirroot/course/lib.php");
@@ -612,7 +613,9 @@ class local_eventocoursecreation_course_creation {
             if (!empty($event->anlassDatumBis)) {
                 $newcourse->enddate = strtotime($event->anlassDatumBis);
             }
-            $newcourse->visible = 0;
+            $newcourse->visible = $setting->coursevisibility;
+            $newcourse->newsitems = $setting->newsitemsnumber;
+            $newcourse->numsections = $setting->numberofsections;
             $return = create_course($newcourse);
 
         } catch (moodle_exception $ex) {

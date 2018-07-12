@@ -56,14 +56,51 @@ class local_eventocoursecreation_setting_form extends moodleform {
         $mform->setDefault('idnumber', $idnumber);
         $mform->addHelpButton('idnumber', 'idnumber', 'local_eventocoursecreation');
 
+        // Default course settings.
+        $mform->addElement('header', 'defaultcourssettings', get_string('defaultcourssettings', 'local_eventocoursecreation'));
+        $mform->setExpanded('defaultcourssettings');
+
+        // Course visability.
+        $choices = array();
+        $choices['0'] = get_string('hide');
+        $choices['1'] = get_string('show');
+        $mform->addElement('select', 'coursevisibility', get_string('coursevisibility'), $choices);
+        $mform->addHelpButton('coursevisibility', 'coursevisibility');
+
+        // Newsitems.
+        $options = range(0, 10);
+        $mform->addElement('select', 'newsitemsnumber', get_string('newsitemsnumber'), $options);
+        $mform->addHelpButton('newsitemsnumber', 'newsitemsnumber');
+
+        // Number of sections.
+        $options = range(0, 20);
+        $mform->addElement('select', 'numberofsections', get_string('numberofsections', 'local_eventocoursecreation'), $options);
+        $mform->addHelpButton('numberofsections', 'numberofsections', 'local_eventocoursecreation');
+
+        // Days.
+        $days = array_combine(range(1, 31), range(1, 31));
+
+        // Months.
+        $months = array();
+        $months['1'] = get_string('january', 'local_eventocoursecreation');
+        $months['2'] = get_string('february', 'local_eventocoursecreation');
+        $months['3'] = get_string('march', 'local_eventocoursecreation');
+        $months['4'] = get_string('april', 'local_eventocoursecreation');
+        $months['5'] = get_string('may', 'local_eventocoursecreation');
+        $months['6'] = get_string('june', 'local_eventocoursecreation');
+        $months['7'] = get_string('july', 'local_eventocoursecreation');
+        $months['8'] = get_string('august', 'local_eventocoursecreation');
+        $months['9'] = get_string('september', 'local_eventocoursecreation');
+        $months['10'] = get_string('october', 'local_eventocoursecreation');
+        $months['11'] = get_string('november', 'local_eventocoursecreation');
+        $months['12'] = get_string('december', 'local_eventocoursecreation');
+
         // Spring Term.
         $mform->addElement('header', 'startspringterm', get_string('startspringterm', 'local_eventocoursecreation'));
         $mform->setExpanded('startspringterm');
-        $mform->addElement('text', 'starttimespringtermday', get_string('springstartday', 'local_eventocoursecreation'), array('size' => '2'));
-        $mform->setType('starttimespringtermday', PARAM_INT);
+        $mform->addElement('select', 'starttimespringtermday', get_string('springstartday', 'local_eventocoursecreation'), $days);
         $mform->addHelpButton('starttimespringtermday', 'springstartday', 'local_eventocoursecreation');
-        $mform->addElement('text', 'starttimespringtermmonth', get_string('springstartmonth', 'local_eventocoursecreation'), array('size' => '2'));
-        $mform->setType('starttimespringtermmonth', PARAM_INT);
+        $mform->addElement('select', 'starttimespringtermmonth', get_string('springstartmonth', 'local_eventocoursecreation'), $months);
         $mform->addHelpButton('starttimespringtermmonth', 'springstartmonth', 'local_eventocoursecreation');
         $mform->addElement('advcheckbox', 'execonlyonstarttimespringterm', get_string('execonlyonstarttimespringterm', 'local_eventocoursecreation'),
                             '', null, array(0, 1));
@@ -72,11 +109,9 @@ class local_eventocoursecreation_setting_form extends moodleform {
         // Autumn Term.
         $mform->addElement('header', 'startautumnterm', get_string('startautumnterm', 'local_eventocoursecreation'));
         $mform->setExpanded('startautumnterm');
-        $mform->addElement('text', 'starttimeautumntermday', get_string('autumnstartday', 'local_eventocoursecreation'), array('size' => '2'));
-        $mform->setType('starttimeautumntermday', PARAM_INT);
+        $mform->addElement('select', 'starttimeautumntermday', get_string('autumnstartday', 'local_eventocoursecreation'), $days);
         $mform->addHelpButton('starttimeautumntermday', 'autumnstartday', 'local_eventocoursecreation');
-        $mform->addElement('text', 'starttimeautumntermmonth', get_string('autumnstartmonth', 'local_eventocoursecreation'), array('size' => '2'));
-        $mform->setType('starttimeautumntermmonth', PARAM_INT);
+        $mform->addElement('select', 'starttimeautumntermmonth', get_string('autumnstartmonth', 'local_eventocoursecreation'), $months);
         $mform->addHelpButton('starttimeautumntermmonth', 'autumnstartmonth', 'local_eventocoursecreation');
         $mform->addElement('advcheckbox', 'execonlyonstarttimeautumnterm', get_string('execonlyonstarttimeautumnterm', 'local_eventocoursecreation'),
                             '', null, array(0, 1));
