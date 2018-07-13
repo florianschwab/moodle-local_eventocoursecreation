@@ -8,3 +8,4 @@
 *   Neue Einstellung für die Anzahl von Abschnitten in neuen Kursen
 *   Neue Einstellung für die Anzahl von Ankündigungen
 *   Neue Einstellung um die Kurserstellung für eine Kategorie zu deaktivieren
+*   Neue Einstellung um eine Kursvorlage zu definieren für neue Kurse

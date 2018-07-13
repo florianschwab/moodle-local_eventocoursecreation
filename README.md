@@ -18,7 +18,9 @@ Only include Evento modules to create moodle courses, which are editded at most 
 # Config
 Requires the local_evento plugin for the webservices access to Evento.
    * Set start and end time for the spring and autumn term course creation
-   * Set an option to execute only on one specific day.
+   * Set an option to execute only on one specific day
+   * Set some default course settings for new courses
+   * Set a template course
 
 ## License
 * Copyright (C) HTW Chur

@@ -50,9 +50,13 @@ class local_eventocoursecreation_setting_form extends moodleform {
         $mform->addElement('header', 'general', get_string('general', 'form'));
         $mform->setExpanded('general');
 
-        $mform->addElement('advcheckbox', 'enablecatcoursecreation',
-                            get_string('enablecatcoursecreation', 'local_eventocoursecreation'), '', null, array(0, 1));
+        // Enable Disable.
+        $choices = array();
+        $choices['0'] = get_string('disabled', 'local_eventocoursecreation');
+        $choices['1'] = get_string('enabled', 'local_eventocoursecreation');
+        $mform->addElement('select', 'enablecatcoursecreation', get_string('enablecatcoursecreation', 'local_eventocoursecreation'), $choices);
         $mform->addHelpButton('enablecatcoursecreation', 'enablecatcoursecreation', 'local_eventocoursecreation');
+        $mform->setDefault('enablecatcoursecreation', 1);
 
         // Coursofstudies = category idnumber.
         $mform->addElement('text', 'idnumber', get_string('idnumber', 'local_eventocoursecreation'), array('size' => '15'));
@@ -70,16 +74,36 @@ class local_eventocoursecreation_setting_form extends moodleform {
         $choices['1'] = get_string('show');
         $mform->addElement('select', 'coursevisibility', get_string('coursevisibility'), $choices);
         $mform->addHelpButton('coursevisibility', 'coursevisibility');
+        $mform->setDefault('coursevisibility', $config->coursevisibility);
 
         // Newsitems.
         $options = range(0, 10);
         $mform->addElement('select', 'newsitemsnumber', get_string('newsitemsnumber'), $options);
         $mform->addHelpButton('newsitemsnumber', 'newsitemsnumber');
+        $mform->setDefault('newsitemsnumber', $config->newsitemsnumber);
 
         // Number of sections.
         $options = range(0, 20);
         $mform->addElement('select', 'numberofsections', get_string('numberofsections', 'local_eventocoursecreation'), $options);
         $mform->addHelpButton('numberofsections', 'numberofsections', 'local_eventocoursecreation');
+        $mform->setDefault('numberofsections', $config->numberofsections);
+
+        // Template course selection.
+        $options = array(
+            'requiredcapabilities' => array('moodle/category:manage'),
+            'multiple' => false
+        );
+        $mform->addElement('course', 'templatecourse', get_string('templatecourse', 'local_eventocoursecreation'), $options);
+        $mform->addHelpButton('templatecourse', 'templatecourse', 'local_eventocoursecreation');
+
+        // Enable/Disable Template.
+        $choices = array();
+        $choices['0'] = get_string('disabled', 'local_eventocoursecreation');
+        $choices['1'] = get_string('enabled', 'local_eventocoursecreation');
+        $mform->addElement('select', 'enablecoursetemplate', get_string('enablecoursetemplate', 'local_eventocoursecreation'), $choices);
+        $mform->addHelpButton('enablecoursetemplate', 'enablecoursetemplate', 'local_eventocoursecreation');
+        $mform->setDefault('enablecoursetemplate', 0);
+        // $mform->disabledIf('templatecourse', 'enablecoursetemplate', 'eq', 0);
 
         // Days.
         $days = array_combine(range(1, 31), range(1, 31));
@@ -102,23 +126,31 @@ class local_eventocoursecreation_setting_form extends moodleform {
         // Spring Term.
         $mform->addElement('header', 'startspringterm', get_string('startspringterm', 'local_eventocoursecreation'));
         $mform->setExpanded('startspringterm');
+
         $mform->addElement('select', 'starttimespringtermday', get_string('springstartday', 'local_eventocoursecreation'), $days);
         $mform->addHelpButton('starttimespringtermday', 'springstartday', 'local_eventocoursecreation');
+        $mform->setDefault('starttimespringtermday', $config->starttimespringtermday);
         $mform->addElement('select', 'starttimespringtermmonth', get_string('springstartmonth', 'local_eventocoursecreation'), $months);
         $mform->addHelpButton('starttimespringtermmonth', 'springstartmonth', 'local_eventocoursecreation');
+        $mform->setDefault('starttimespringtermmonth', $config->starttimespringtermmonth);
         $mform->addElement('advcheckbox', 'execonlyonstarttimespringterm', get_string('execonlyonstarttimespringterm', 'local_eventocoursecreation'),
                             '', null, array(0, 1));
+        $mform->setDefault('execonlyonstarttimespringterm', $config->execonlyonstarttimespringterm);
         $mform->addHelpButton('execonlyonstarttimespringterm', 'execonlyonstarttimespringterm', 'local_eventocoursecreation');
 
         // Autumn Term.
         $mform->addElement('header', 'startautumnterm', get_string('startautumnterm', 'local_eventocoursecreation'));
         $mform->setExpanded('startautumnterm');
+
         $mform->addElement('select', 'starttimeautumntermday', get_string('autumnstartday', 'local_eventocoursecreation'), $days);
         $mform->addHelpButton('starttimeautumntermday', 'autumnstartday', 'local_eventocoursecreation');
+        $mform->setDefault('starttimeautumntermday', $config->starttimeautumntermday);
         $mform->addElement('select', 'starttimeautumntermmonth', get_string('autumnstartmonth', 'local_eventocoursecreation'), $months);
         $mform->addHelpButton('starttimeautumntermmonth', 'autumnstartmonth', 'local_eventocoursecreation');
+        $mform->setDefault('starttimeautumntermmonth', $config->starttimeautumntermmonth);
         $mform->addElement('advcheckbox', 'execonlyonstarttimeautumnterm', get_string('execonlyonstarttimeautumnterm', 'local_eventocoursecreation'),
                             '', null, array(0, 1));
+        $mform->setDefault('execonlyonstarttimeautumnterm', $config->execonlyonstarttimeautumnterm);
         $mform->addHelpButton('execonlyonstarttimeautumnterm', 'execonlyonstarttimeautumnterm', 'local_eventocoursecreation');
 
         // Hidden Params.
