@@ -25,6 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/local/eventocoursecreation/locallib.php');
+require_once($CFG->dirroot . '/cache/lib.php');
+require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 /**
  * Class definition for the evento course creation
@@ -595,10 +598,12 @@ class local_eventocoursecreation_course_creation {
      * @return object new course instance
      */
     protected function create_new_course($event, $categoryid, local_eventocoursecreation_setting $setting) {
-        global $CFG;
+        global $CFG, $USER;
+
         try {
             require_once("$CFG->dirroot/course/lib.php");
-            $return = null;
+            $course = null;
+            $restoredata = null;
             $newcourse = new stdClass();
 
             if (!empty($event->anlassNummer)) {
@@ -620,13 +625,42 @@ class local_eventocoursecreation_course_creation {
             $newcourse->visible = $setting->coursevisibility;
             $newcourse->newsitems = $setting->newsitemsnumber;
             $newcourse->numsections = $setting->numberofsections;
-            $return = create_course($newcourse);
+
+            // Use a template?
+            if ((int)$setting->enablecoursetemplate == 1) {
+                $restoredata = $this->get_restore_content_dir($setting->templatecourse);
+                if (isset($restoredata)) {
+                    $newcourse->numsections = 0;
+                }
+            }
+
+            $course = create_course($newcourse);
+
+            // Restore a course from a template.
+            if (!empty($restoredata)) {
+                // Clear new created empty courses for a correct import (delete sections WITH content).
+                $rc = new restore_controller($restoredata, $course->id, backup::INTERACTIVE_NO,
+                    backup::MODE_IMPORT, $USER->id, backup::TARGET_CURRENT_ADDING);
+
+                // Check if the format conversion must happen first.
+                if ($rc->get_status() == backup::STATUS_REQUIRE_CONV) {
+                    $rc->convert();
+                }
+                if ($rc->execute_precheck()) {
+                    $rc->execute_plan();
+                    debugging("Restored content for course {$course->shortname}", DEBUG_DEVELOPER);
+                } else {
+                    debugging("Error during restoring to the course {$course->shortname};");
+                    $this->trace->output("Error during restoring to the course {$course->shortname};");
+                }
+                $rc->destroy();
+            }
 
         } catch (moodle_exception $ex) {
             if (($ex->errorcode == 'courseidnumbertaken') || ($ex->errorcode == 'shortnametaken')) {
                 // Course already exists not needed to be created.
                 debugging("{$ex->errorcode} for course shortname {$newcourse->shortname}", DEBUG_DEVELOPER);
-                return $return;
+                return $course;
             } else {
                 throw $ex;
             }
@@ -634,7 +668,98 @@ class local_eventocoursecreation_course_creation {
         if (isset($return)) {
             $this->moodlecourses[$return->idnumber] = $return;
         }
-        return $return;
+        return $course;
+    }
+
+    /**
+     * Get the directory of the object to restore.
+     *
+     * @param int $templatecourse id of a course, which is used to get the content
+     * @return string|false|null subdirectory in $CFG->backuptempdir/..., false when an error occured
+     *                           and null when there is simply nothing.
+     */
+    protected function get_restore_content_dir($templatecourse) {
+
+        if (empty($templatecourse) || !is_numeric($templatecourse)) {
+            return null;
+        }
+
+        $errors = array();
+        $dir = self::create_restore_content_dir($templatecourse, $errors);
+        if (!empty($errors)) {
+            foreach ($errors as $key => $message) {
+                debugging("Error during get content of course id {$templatecourse}; ". $message);
+                $this->trace->output("Error during get content of course id {$templatecourse}; ". $message);
+            }
+            return false;
+        } else if ($dir === false) {
+            // We want to return null when nothing was wrong, but nothing was found.
+            $dir = null;
+        }
+        return $dir;
+    }
+
+    /**
+     * Get the restore content tempdir.
+     *
+     * The tempdir is the sub directory in which the backup has been extracted.
+     *
+     * This caches the result for better performance, but $CFG->keeptempdirectoriesonbackup
+     * needs to be enabled, otherwise the cache is ignored.
+     *
+     * @param int $templatecourse id of a course.
+     * @param array $errors will be populated with errors found.
+     * @return string|false false when the backup couldn't retrieved.
+     */
+    public static function create_restore_content_dir($templatecourse = null, &$errors = array()) {
+        global $CFG, $DB, $USER;
+
+        $cachekey = null;
+        if (!empty($templatecourse) || is_numeric($templatecourse)) {
+            $cachekey = 'backup_id:' . $templatecourse;
+        }
+
+        if (empty($cachekey)) {
+            return false;
+        }
+
+        // If $CFG->keeptempdirectoriesonbackup is not set to true, any restore happening would
+        // automatically delete the backup directory... causing the cache to return an unexisting directory.
+        $usecache = !empty($CFG->keeptempdirectoriesonbackup);
+        if ($usecache) {
+            $cache = cache::make('local_eventocoursecreation', 'coursecreation');
+        }
+
+        // If we don't use the cache, or if we do and not set, or the directory doesn't exist any more.
+        if (!$usecache || (($backupid = $cache->get($cachekey)) === false || !is_dir(get_backup_temp_directory($backupid)))) {
+
+            // Use null instead of false because it would consider that the cache key has not been set.
+            $backupid = null;
+
+            if (!empty($templatecourse) || is_numeric($templatecourse)) {
+                // Creating restore from an existing course.
+                $courseid = $DB->get_field('course', 'id', array('id' => $templatecourse), IGNORE_MISSING);
+                if (!empty($courseid)) {
+                    $bc = new backup_controller(backup::TYPE_1COURSE, $courseid, backup::FORMAT_MOODLE,
+                        backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id);
+                    $bc->execute_plan();
+                    $backupid = $bc->get_backupid();
+                    $bc->destroy();
+                } else {
+                    $errors['coursetorestorefromdoesnotexist'] = new lang_string('coursetorestorefromdoesnotexist',
+                                                                                    'local_eventocoursecreation');
+                }
+            }
+
+            if ($usecache) {
+                $cache->set($cachekey, $backupid);
+            }
+        }
+
+        if ($backupid === null) {
+            $backupid = false;
+        }
+        return $backupid;
     }
 
     /**

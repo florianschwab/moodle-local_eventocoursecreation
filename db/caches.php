@@ -15,20 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Evento course creation plugin
+ * Cache definitions.
  *
  * @package    local_eventocoursecreation
- * @copyright  2017 HTW Chur Roger Barras
+ * @copyright  2018, HTW chur {@link http://www.htwchur.ch}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018220511; // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016120500; // Requires this Moodle version.
-$plugin->component = 'local_eventocoursecreation';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "2.0"; // User-friendly version number.
-$plugin->dependencies = array(
-    'local_evento' => 2017071302
+$definitions = array(
+    'coursecreation' => array(
+        'mode' => cache_store::MODE_REQUEST,
+    )
 );

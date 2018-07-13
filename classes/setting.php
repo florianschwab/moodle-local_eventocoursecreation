@@ -40,6 +40,8 @@ class local_eventocoursecreation_setting {
         'id' => array('id', 0),
         'category' => array('ca', 0),
         'enablecatcoursecreation' => array('en', 1),
+        'templatecourse' => array('tc', null),
+        'enablecoursetemplate' => array('et', 0),
         'starttimespringtermday' => array('sd', EVENTOCOURSECREATION_DEFAULT_SPRINGTERM_STARTDAY),
         'starttimespringtermmonth' => array('sm', EVENTOCOURSECREATION_DEFAULT_SPRINGTERM_STARTMONTH),
         'execonlyonstarttimespringterm' => array('es', 1),
@@ -60,6 +62,12 @@ class local_eventocoursecreation_setting {
 
     /** @var int */
     protected $enablecatcoursecreation = 1;
+
+    /** @var int */
+    protected $templatecourse = null;
+
+    /** @var int */
+    protected $enablecoursetemplate = 0;
 
     /** @var int */
     protected $starttimespringtermday = EVENTOCOURSECREATION_DEFAULT_SPRINGTERM_STARTDAY;
@@ -291,6 +299,9 @@ class local_eventocoursecreation_setting {
             }
             $newsetting->starttimeautumntermmonth = $data->starttimeautumntermmonth;
         }
+
+        $newsetting->templatecourse = $data->templatecourse;
+        $newsetting->enablecoursetemplate = $data->enablecoursetemplate;
 
         $newsetting->execonlyonstarttimespringterm = $data->execonlyonstarttimespringterm;
         $newsetting->coursevisibility = $data->coursevisibility;
