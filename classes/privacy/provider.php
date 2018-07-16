@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_groupselect\privacy;
+namespace local_eventocoursecreation\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
