@@ -61,6 +61,7 @@ $string['numberofsections_help'] = 'Anzahl Abschnitte bei neuen leeren Kursen';
 $string['plugindisabled'] = 'Das Plugin zur Evento Kurserstellung ist deaktiviert!';
 $string['pluginname'] = 'Evento Kurserstellung';
 $string['pluginname_desc'] = 'Erstellt neue Moodle Kurse aufgrund der Module in Evento.';
+$string['privacy:metadata'] = 'Das Plugin Evento-Kurserstellung speichert keine persönlichen Daten.';
 $string['shortcoursenaming'] = 'Kurzer Name für Moodle Kurse';
 $string['shortcoursenaming_help'] = 'Definiert den kurzen Namen für Kurse. Verfügbar sind folgende Tokens: (Evento Module Name: @EVENTONAME@; Evento Module Abkürzung: @EVENTOABK@; Semesterperiode: @PERIODE@; Studiengang: @STG@)';
 $string['springendmonth'] = 'Endmonat';
