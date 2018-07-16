@@ -61,6 +61,7 @@ $string['numberofsections_help'] = 'Number of section in empty new courses';
 $string['plugindisabled'] = 'The plugin for Evento Course Creation is disabled!';
 $string['pluginname'] = 'Evento Course Creation';
 $string['pluginname_desc'] = 'Creates courses based on the evento modules.';
+$string['privacy:metadata'] = 'The plugin Evento Course Creation does not store any personal data.';
 $string['shortcoursenaming'] = 'Short name for moodle courses';
 $string['shortcoursenaming_help'] = 'Defines the short name for courses. Available tokens are: (Evento module name: @EVENTONAME@; Evento module abrevation: @EVENTOABK@; Term period: @PERIODE@; Course of studies: @STG@)';
 $string['springendmonth'] = 'End month';
