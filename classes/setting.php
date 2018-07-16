@@ -299,10 +299,12 @@ class local_eventocoursecreation_setting {
             }
             $newsetting->starttimeautumntermmonth = $data->starttimeautumntermmonth;
         }
-
-        $newsetting->templatecourse = $data->templatecourse;
+        if ($data->templatecourse == 0 || !is_numeric($data->templatecourse)) {
+            $newsetting->templatecourse = null;
+        } else {
+            $newsetting->templatecourse = $data->templatecourse;
+        }
         $newsetting->enablecoursetemplate = $data->enablecoursetemplate;
-
         $newsetting->execonlyonstarttimespringterm = $data->execonlyonstarttimespringterm;
         $newsetting->coursevisibility = $data->coursevisibility;
         $newsetting->newsitemsnumber = $data->newsitemsnumber;
