@@ -952,7 +952,7 @@ class local_eventocoursecreation_course_naming {
      * @return string long name for a moodle course
      */
     public function create_long_course_name() {
-        return $this->create_name($this->config->longcoursenaming);
+        return trim($this->create_name($this->config->longcoursenaming));
     }
 
     /**
@@ -963,18 +963,34 @@ class local_eventocoursecreation_course_naming {
     public function create_short_course_name() {
         global $DB;
         $namenumber = $this->create_name($this->config->shortcoursenaming);
-        $name = str_replace($this->number, '', $namenumber);
+        $name = trim(str_replace($this->number, '', $namenumber));
         // Only the the number in shortname if there are 2 Modules with the same name.
         // Check if the shortname already exists.
-        if ($DB->record_exists('course', array('shortname' => $name))) {
+        $params = array('pname' => $name . '%');
+        if ($DB->record_exists_select('course', 'shortname like :pname', $params)) {
+            if ($DB->record_exists('course', array('shortname' => $name))) {
+                // Update existing course and entend the short name with the numbertoken.
+                $course = $DB->get_record('course', array('shortname' => $name), '*', MUST_EXIST);
+                // Get the trailing number token.
+                $modtokens = explode('.', $course->idnumber);
+                $numbertoken = end($modtokens);
+                if (isset($numbertoken) && is_numeric($numbertoken)) {
+                    $course->shortname = $course->shortname . ' ' .$numbertoken;
+                    if ($DB->record_exists('course', array('shortname' => $name))) {
+                        update_course($course);
+                    }
+                }
+            }
             $name = $namenumber;
         }
-        return $name;
+
+        return trim($name);
     }
 
     /**
      * Creates a name for a cours out of a specific naming
      *
+     * @param string $naming String with naming tokens to be replaced by module values
      * @return string name for a naming
      */
     protected function create_name($naming) {
@@ -983,8 +999,9 @@ class local_eventocoursecreation_course_naming {
         $name = str_replace(EVENTOCOURSECREATION_NAME_PH_EVENTO_ABR, $this->moduleabr, $name);
         $name = str_replace(EVENTOCOURSECREATION_NAME_PH_PERIOD, $this->period, $name);
         $name = str_replace(EVENTOCOURSECREATION_NAME_PH_COS, $this->courseofstudies, $name);
+        $name = str_replace(EVENTOCOURSECREATION_NAME_PH_NUM, $this->number, $name);
 
-        return $name;
+        return trim($name);
     }
 
 }
