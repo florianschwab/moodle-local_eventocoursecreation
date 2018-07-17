@@ -306,6 +306,7 @@ class local_eventocoursecreation_setting {
         }
         $newsetting->enablecoursetemplate = $data->enablecoursetemplate;
         $newsetting->execonlyonstarttimespringterm = $data->execonlyonstarttimespringterm;
+        $newsetting->execonlyonstarttimeautumnterm = $data->execonlyonstarttimeautumnterm;
         $newsetting->coursevisibility = $data->coursevisibility;
         $newsetting->newsitemsnumber = $data->newsitemsnumber;
         $newsetting->numberofsections = $data->numberofsections;

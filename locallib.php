@@ -82,10 +82,14 @@ define('EVENTOCOURSECREATION_NAME_PH_PERIOD', '@PERIODE@');
  */
 define('EVENTOCOURSECREATION_NAME_PH_COS', '@STG@');
 /**
+ * Placeholder for instance number ob the module number (the trailing 3 digits)
+ */
+define('EVENTOCOURSECREATION_NAME_PH_NUM', '@NUM@');
+/**
  * Default setting value for the long name of a course
  */
 define('EVENTOCOURSECREATION_NAME_LONGNAME', '@EVENTONAME@ (@STG@) @PERIODE@');
 /**
  * Default setting value for the short name of a course
  */
-define('EVENTOCOURSECREATION_NAME_SHORTNAME', '@EVENTOABK@ (@STG@) @PERIODE@');
+define('EVENTOCOURSECREATION_NAME_SHORTNAME', '@EVENTOABK@ (@STG@) @PERIODE@ @NUM@');
