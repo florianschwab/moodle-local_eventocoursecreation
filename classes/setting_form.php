@@ -98,8 +98,8 @@ class local_eventocoursecreation_setting_form extends moodleform {
 
         // Enable/Disable Template.
         $choices = array();
-        $choices['0'] = get_string('disabled', 'local_eventocoursecreation');
-        $choices['1'] = get_string('enabled', 'local_eventocoursecreation');
+        $choices['0'] = get_string('no', 'local_eventocoursecreation');
+        $choices['1'] = get_string('yes', 'local_eventocoursecreation');
         $mform->addElement('select', 'enablecoursetemplate', get_string('enablecoursetemplate', 'local_eventocoursecreation'), $choices);
         $mform->addHelpButton('enablecoursetemplate', 'enablecoursetemplate', 'local_eventocoursecreation');
         $mform->setDefault('enablecoursetemplate', 0);
