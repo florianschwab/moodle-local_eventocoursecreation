@@ -919,13 +919,13 @@ class local_eventocoursecreation_course_naming {
         $this->eventomodulenumber = $eventomodulenumber;
         $this->config = get_config('local_eventocoursecreation');
         $this->period = local_eventocoursecreation_course_creation::get_module_period($this->eventomodulenumber, $modulstarttime);
-        // Remove trailing info after a '_'
+        // Remove trailing info after a '_'.
         $this->period = reset(preg_split('/(?=[_])/', $this->period, -1));
 
         $modtokens = array();
         $modtokens = explode('.', $this->eventomodulenumber);
 
-        $this->number = end($modtokens);
+        $this->number = (int)end($modtokens);
         if (!isset($this->number)) {
             $this->number = '';
         }
@@ -963,17 +963,17 @@ class local_eventocoursecreation_course_naming {
     public function create_short_course_name() {
         global $DB;
         $namenumber = $this->create_name($this->config->shortcoursenaming);
-        $name = trim(str_replace($this->number, '', $namenumber));
+        $name = trim($this->create_name(str_replace(EVENTOCOURSECREATION_NAME_PH_NUM, '', $this->config->shortcoursenaming)));
         // Only the the number in shortname if there are 2 Modules with the same name.
         // Check if the shortname already exists.
         $params = array('pname' => $name . '%');
         if ($DB->record_exists_select('course', 'shortname like :pname', $params)) {
             if ($DB->record_exists('course', array('shortname' => $name))) {
-                // Update existing course and entend the short name with the numbertoken.
+                // Update existing course and extend the short name with the numbertoken.
                 $course = $DB->get_record('course', array('shortname' => $name), '*', MUST_EXIST);
                 // Get the trailing number token.
                 $modtokens = explode('.', $course->idnumber);
-                $numbertoken = end($modtokens);
+                $numbertoken = (int)end($modtokens);
                 if (isset($numbertoken) && is_numeric($numbertoken)) {
                     $course->shortname = $course->shortname . ' ' .$numbertoken;
                     if ($DB->record_exists('course', array('shortname' => $name))) {
