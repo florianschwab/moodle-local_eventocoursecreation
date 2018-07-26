@@ -125,6 +125,8 @@ class local_eventocoursecreation_course_creation {
                     try {
                         // Get all Evento moduls with the same eventonumber (p.I.: "mod.bsp%"), active and with a future start date.
                         $events = $this->get_future_events($modn);
+                        // Invert the array to create it in a proper order in moodle. Create last course first.
+                        $events = array_reverse($events);
                         $subcat = null;
                         $period = "";
 
