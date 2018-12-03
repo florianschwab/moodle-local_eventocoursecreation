@@ -28,6 +28,7 @@ require_once($CFG->dirroot . '/local/eventocoursecreation/locallib.php');
 require_once($CFG->dirroot . '/cache/lib.php');
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+require_once($CFG->dirroot . '/enrol/evento/interface.php');
 
 /**
  * Class definition for the evento course creation
