@@ -1,22 +1,26 @@
 language: php
 
 sudo: false
+dist: trusty
 
 cache:
   directories:
     - $HOME/.composer/cache
 
 php:
- - 5.6
- - 7.0
+ - 7.2
+
+addons:
+  postgresql: "9.3"
 
 env:
 
  matrix:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_35_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
+
   - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -39,3 +43,4 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
+  - moodle-plugin-ci phpunit
