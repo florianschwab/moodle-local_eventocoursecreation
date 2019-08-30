@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 use PHPUnit\Framework\Error\Error;
 
+require_once($CFG->dirroot . '/local/eventocoursecreation/interface.php');
 require_once($CFG->dirroot . '/local/eventocoursecreation/tests/builder.php');
 
 class mod_evento_advanced_testcase extends advanced_testcase {
