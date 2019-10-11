@@ -102,16 +102,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
     /**
      * @test
      */
-    public function basic() {
-        $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
-        $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
-        $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
 
-        $person = $this->simulator->get_person_by_id(141703);
-        $person = $this->simulator->get_person_by_id(117828);
-        $ad_account = $this->simulator->get_ad_accounts_by_evento_personid(141701, null, null);
-        $ad_account_student = $this->simulator->get_all_ad_accounts(null);
-    }
 
     /*Basic test if plugin is enabled*/
     /**
