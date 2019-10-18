@@ -233,7 +233,7 @@ class evento_anlass_veranstalter{
 //class evento_anlass_ltg_person{}
 
 class evento_anlass{
-    
+
     public $anlassbezeichnung;
     public $anlassdatumbis;
     public $anlassdatumvon;
