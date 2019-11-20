@@ -9,6 +9,7 @@ cache:
 
 php:
  - 7.2
+ - 7.3
 
 addons:
   postgresql: "9.3"
@@ -17,9 +18,9 @@ env:
 
  matrix:
 
-  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_35_STABLE
-  
+  - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_38_STABLE
+
   - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
   - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
 
