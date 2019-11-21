@@ -72,6 +72,11 @@ class mod_evento_advanced_testcase extends advanced_testcase {
         $evento_anlass = $builder->add_anlass("Audio- & Kameratechnik 2", "2019-02-17T00:00:00.000+01:00", "2018-09-17T00:00:00.000+02:00", null, 117828, "mod.mmpAUKATE1.HS18_BS.002", null, 25491, 1, 60, 10230, 3 );
         /**/
         $evento_status = $builder->add_evento_anlass_status(20215, "aA.Angemeldet", "BI_gzap", 30040, "2008-07-04T10:03:23.000+02:00");
+
+        $this->simulator = $builder->service;
+        $this->locallib = new course_creation($this->simulator);
+
+
         /*Create evento person Hans Meier*/
 /*        $evento_personen_anmeldung = $builder->add_personen_anmeldung("2019-02-17T00:00:00.000+01:00", "hoferlis", "2018-06-05T08:58:20.723+02:00", "auto", 415864, 20215, 25490, 141703, $evento_status);
         $evento_person = $builder->add_person("Meier", "Hans", "hans.meier@stud.htwchur.ch",  141703, 30040, true, 141703, $evento_personen_anmeldung);
@@ -113,13 +118,6 @@ var_dump("ANLASS ANFANG");
 var_dump($this->simulator);
 //         var_dump($anlass);
          var_dump("ANLASS ENDE");
-//         $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
-//         $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
-
-//         $person = $this->simulator->get_person_by_id(141703);
-//         $person = $this->simulator->get_person_by_id(117828);
-//         $ad_account = $this->simulator->get_ad_accounts_by_evento_personid(141701, null, null);
-//         $ad_account_student = $this->simulator->get_all_ad_accounts(null);
      }
 
 }
