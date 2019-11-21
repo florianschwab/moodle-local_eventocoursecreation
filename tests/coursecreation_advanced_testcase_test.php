@@ -74,7 +74,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
         $evento_status = $builder->add_evento_anlass_status(20215, "aA.Angemeldet", "BI_gzap", 30040, "2008-07-04T10:03:23.000+02:00");
 
         $this->simulator = $builder->service;
-        $this->locallib = new local_eventocoursecreation_course_creation($this->simulator);
+        $this->locallib = new local_eventocoursecreation_course_creation_exposed($this->simulator);
 
 
         /*Create evento person Hans Meier*/
@@ -106,18 +106,17 @@ class mod_evento_advanced_testcase extends advanced_testcase {
     /**
      * @test
      */
-
-
-    /*Basic test if plugin is enabled*/
-    /**
-     * @test
-     */
      public function basic() {
          $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
-var_dump("ANLASS ANFANG");
-var_dump($anlass);
-//         var_dump($anlass);
-         var_dump("ANLASS ENDE");
+         $this->assertEquals( $evento_plugin->get_name(), 'evento');
+     }
+
+     /**
+     * @test
+     */
+     public function get_future_events() {
+         get_future_events_exposed()
+
      }
 
 }

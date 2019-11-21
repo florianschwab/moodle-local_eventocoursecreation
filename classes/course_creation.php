@@ -61,7 +61,7 @@ class local_eventocoursecreation_course_creation {
     public function __construct($evento_service = null) {
         $this->config = get_config('local_eventocoursecreation');
 //        $this->eventoservice = new local_evento_evento_service();
-$this->eventoservice = $evento_service;
+        $this->eventoservice = $evento_service;
         $this->enrolplugin = enrol_get_plugin('evento');
     }
 
