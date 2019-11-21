@@ -109,10 +109,10 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      * @test
      */
      public function basic() {
-         $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
+//         $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
 //         var_dump($this->simulator);
 var_dump("ANLASS ANFANG");
-         var_dump($anlass);
+//         var_dump($anlass);
          var_dump("ANLASS ENDE");
 //         $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
 //         $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
