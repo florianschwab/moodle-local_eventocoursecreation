@@ -115,7 +115,9 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      * @test
      */
      public function get_future_events() {
-         get_future_events_exposed()
+         $modnr = "mod.mmp";
+         $future_events = get_future_events_exposed($modnr);
+         var_dump($future_events);
 
      }
 
