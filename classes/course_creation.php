@@ -58,9 +58,10 @@ class local_eventocoursecreation_course_creation {
      * Initialize the service keeping reference to the soap-client
      *
      */
-    public function __construct() {
+    public function __construct($evento_service = null) {
         $this->config = get_config('local_eventocoursecreation');
-        $this->eventoservice = new local_evento_evento_service();
+//        $this->eventoservice = new local_evento_evento_service();
+$this->eventoservice = $evento_service;
         $this->enrolplugin = enrol_get_plugin('evento');
     }
 
