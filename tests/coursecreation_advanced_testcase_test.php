@@ -115,7 +115,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      public function basic() {
          $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
 var_dump("ANLASS ANFANG");
-var_dump($this->simulator);
+var_dump($anlass);
 //         var_dump($anlass);
          var_dump("ANLASS ENDE");
      }
