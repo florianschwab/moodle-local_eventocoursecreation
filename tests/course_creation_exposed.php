@@ -44,9 +44,9 @@ class local_eventocoursecreation_course_creation_exposed extends local_eventocou
     public function get_restore_content_dir_exposed($templatecourse) {
         return parent::get_restore_content_dir($templatecourse);
     }
-    public function create_restore_content_dir_exposed($templatecourse = null, &$errors = array()) {
+/*    public function create_restore_content_dir_exposed($templatecourse = null, &$errors = array()) {
         return parent::create_restore_content_dir($templatecourse = null, &$errors = array());
-    }
+    }*/
     public function update_student_enrolment_exposed($eventopersonid, $eventoenrolstate, $instance) {
 
         $now = time();
