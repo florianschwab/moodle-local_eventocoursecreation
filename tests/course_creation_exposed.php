@@ -38,9 +38,9 @@ class local_eventocoursecreation_course_creation_exposed extends local_eventocou
     public function filter_valid_create_events_exposed($var) {
         return parent::filter_valid_create_events_user($var);
     }
-    public function create_new_course_exposed($event, $categoryid, local_eventocoursecreation_setting $setting) {
+/*    public function create_new_course_exposed($event, $categoryid, local_eventocoursecreation_setting $setting) {
         return parent::create_new_course($event, $categoryid, local_eventocoursecreation_setting $setting);
-    }
+    }*/
     public function get_restore_content_dir_exposed($templatecourse) {
         return parent::get_restore_content_dir($templatecourse);
     }
