@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot . '/local/eventocoursecreation/classes/course_creation.php';
+require_once($CFG->dirroot . '/local/eventocoursecreation/classes/course_creation.php');
 
 
 
