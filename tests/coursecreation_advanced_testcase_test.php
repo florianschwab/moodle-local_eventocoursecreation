@@ -70,7 +70,6 @@ class mod_evento_advanced_testcase extends advanced_testcase {
         /*Create Evento Course*/
         $evento_anlass = $builder->add_anlass("Audio- & Kameratechnik 1", "2019-02-17T00:00:00.000+01:00", "2018-09-17T00:00:00.000+02:00", null, 117829, "mod.mmpAUKATE1.HS18_BS.001", null, 25490, 1, 60, 10230, 3 );
         $evento_anlass = $builder->add_anlass("Audio- & Kameratechnik 2", "2019-02-17T00:00:00.000+01:00", "2018-09-17T00:00:00.000+02:00", null, 117828, "mod.mmpAUKATE1.HS18_BS.002", null, 25491, 1, 60, 10230, 3 );
-        var_dump($evento_anlass);
         /**/
         $evento_status = $builder->add_evento_anlass_status(20215, "aA.Angemeldet", "BI_gzap", 30040, "2008-07-04T10:03:23.000+02:00");
         /*Create evento person Hans Meier*/
@@ -110,8 +109,8 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      */
      public function basic() {
 //         $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
-//         var_dump($this->simulator);
 var_dump("ANLASS ANFANG");
+var_dump($this->simulator);
 //         var_dump($anlass);
          var_dump("ANLASS ENDE");
 //         $personenanmeldung = $this->simulator->get_enrolments_by_eventid(25490);
