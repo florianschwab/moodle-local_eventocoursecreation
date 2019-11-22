@@ -31,10 +31,11 @@ before_install:
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
-  - moodle-plugin-ci add-plugin thomasianwieling/moodle-local_evento
-  - moodle-plugin-ci install
+
 
 install:
+
+  - moodle-plugin-ci add-plugin thomasianwieling/moodle-local_evento
   - moodle-plugin-ci install
 
 script:
