@@ -68,6 +68,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
         /*Create Object $locallib*/
 
         $builder = new builder;
+        var_dump("builder");
         var_dump($builder);
         /*Create Evento Course*/
         $evento_anlass = $builder->add_anlass("Audio- & Kameratechnik 1", "2019-02-17T00:00:00.000+01:00", "2018-09-17T00:00:00.000+02:00", null, 117829, "mod.mmpAUKATE1.HS18_BS.001", null, 25490, 1, 60, 10230, 3 );
