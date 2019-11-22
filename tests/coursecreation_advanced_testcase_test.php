@@ -119,7 +119,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      */
      public function get_future_events() {
          $modnr = "mod.mmp";
-         $future_events = $this->simulator->get_future_events_exposed($modnr);
+         $future_events = $this->locallib->get_future_events_exposed($modnr);
          var_dump($future_events);
 
      }
