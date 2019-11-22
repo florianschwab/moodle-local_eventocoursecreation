@@ -109,7 +109,8 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      */
      public function basic() {
          $anlass = $this->simulator->get_event_by_number("mod.mmpAUKATE1.HS18_BS.002");
-         $this->assertEquals( $evento_plugin->get_name(), 'evento');
+         var_dump($anlass);
+        // $this->assertEquals($evento_plugin->get_name(), 'evento');
      }
 
      /**
