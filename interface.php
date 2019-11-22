@@ -123,7 +123,4 @@ interface interface_evento_service{
     public static function to_array($value);
 }
 
-interface interface_evento_limitationfilter2{
-
-    
-}
+interface interface_evento_limitationfilter2{}

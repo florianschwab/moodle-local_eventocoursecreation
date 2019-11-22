@@ -44,7 +44,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
     /** @var stdClass Plugin. */
     private $plugin;
     /** @var stdClass Plugin. */
-    private $locallib;
+    private $coursecreation;
     /** @var stdClass Plugin. */
     private $user_enrolment;
     /** @var stdClass Plugin. */
@@ -65,7 +65,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
         /*Create Moodle categories*/
         $this->cat1 = $this->getDataGenerator()->create_category();
         $this->cat2 = $this->getDataGenerator()->create_category();
-        /*Create Object $locallib*/
+        /*Create Object $coursecreation*/
 
         $builder = new builder;
         /*Create Evento Course*/
@@ -73,10 +73,8 @@ class mod_evento_advanced_testcase extends advanced_testcase {
         $evento_anlass = $builder->add_anlass("Audio- & Kameratechnik 2", "2019-02-17T00:00:00.000+01:00", "2018-09-17T00:00:00.000+02:00", null, 117828, "mod.mmpAUKATE1.HS18_BS.002", null, 25491, 1, 60, 10230, 3 );
         /**/
         $evento_status = $builder->add_evento_anlass_status(20215, "aA.Angemeldet", "BI_gzap", 30040, "2008-07-04T10:03:23.000+02:00");
-        var_dump("builder");
-        var_dump($builder);
         $this->simulator = $builder->service;
-        $this->locallib = new local_eventocoursecreation_course_creation_exposed($this->simulator);
+        $this->coursecreation = new local_eventocoursecreation_course_creation_exposed($this->simulator);
 
 
         /*Create evento person Hans Meier*/
@@ -119,7 +117,7 @@ class mod_evento_advanced_testcase extends advanced_testcase {
      */
      public function get_future_events() {
          $modnr = "mod.mmp";
-         $future_events = $this->locallib->get_future_events_exposed($modnr);
+         $future_events = $this->coursecreation->get_future_events_exposed($modnr);
          var_dump($future_events);
 
      }

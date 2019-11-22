@@ -161,3 +161,11 @@ class service implements interface_evento_service
         return trim(str_replace($this->config->adsidprefix, "", $sid) . $this->config->adshibbolethsuffix);
     }
 }
+
+class filter implements interface_evento_limitationfilter2
+{
+    /** @var string */
+    public $anlassnummer = null;
+    /** @var int */
+    public $idanlasstyp = null;
+}
